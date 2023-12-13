@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                         auth
                                 /*.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers("/api/user/**").hasAuthority("ROLE_USER")*/
-                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())  // Configura tu proveedor de autenticación personalizado

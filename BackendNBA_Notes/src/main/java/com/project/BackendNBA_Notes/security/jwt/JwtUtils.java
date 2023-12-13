@@ -32,13 +32,13 @@ public class JwtUtils {
                 .getBody()
                 .getSubject();
     }
-    public String getTokenFromRequest(HttpServletRequest request) {
+    /*public String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
         return null;
-    }
+    }*/
     public boolean validateToken(String token) throws InvalidJwtException {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
