@@ -2,7 +2,6 @@ package com.project.nba_notes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -17,27 +16,23 @@ import java.util.Map;
 
 public class JsonObjectRequestWithAuthHeader extends JsonObjectRequest {
 
+    private Context context;
 
-    public JsonObjectRequestWithAuthHeader(int method, String url, @Nullable JSONObject jsonRequest, Response.Listener<JSONObject> listener, @Nullable Response.ErrorListener errorListener) {
+    public JsonObjectRequestWithAuthHeader(int method, String url, JSONObject jsonRequest,
+                                           Response.Listener<JSONObject> listener,
+                                           @Nullable Response.ErrorListener errorListener,
+                                           Context context) { // Añade el contexto aquí
         super(method, url, jsonRequest, listener, errorListener);
+        this.context = context; // Asigna el contexto
     }
-
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        /*SharedPreferences preferences = context.getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
-        //final String sessionToken = preferences.getString("VALID_TOKEN", null);
-        final String sessionToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzAyNjE5NzQ1LCJpYXQiOjE3MDI1NTk3NDV9.GdbQCl8mrMbALdFi8u0DZ5O8zHWj7GS7XyCzxiBD6OM77F_79p7X-J7didGvENpbvSsdAJQYrLN7tdabnbl5Mw";
-        if (sessionToken == null) {
-            Toast.makeText(context,"Sesion nula",Toast.LENGTH_LONG).show();
-
-            throw new AuthFailureError();
-         }*/
-        final String sessionToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzAyNjE5NzQ1LCJpYXQiOjE3MDI1NTk3NDV9.GdbQCl8mrMbALdFi8u0DZ5O8zHWj7GS7XyCzxiBD6OM77F_79p7X-J7didGvENpbvSsdAJQYrLN7tdabnbl5Mw";
-
-        HashMap<String, String> myHeaders = new HashMap<>();
-        myHeaders.put("Session-Token", sessionToken);
-        return myHeaders;
-
+        Map<String, String> headers = new HashMap<>();
+        // Recupera el token de SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        // String token = sharedPreferences.getString("token", "");
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzAyNjQ4MDY4LCJpYXQiOjE3MDI1ODgwNjh9.FWc91aHu7uhBlQmnmhMNjKXr4fU6MYjRLalpSv6QK267QXNcgMJkLGWdp-UnA54ASH38H83Lf6wgM-e2mlp6Vg";
+        headers.put("Authorization","Bearer " + token);
+        return headers;
     }
-
 }

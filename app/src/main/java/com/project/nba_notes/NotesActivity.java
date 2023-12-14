@@ -3,6 +3,7 @@ package com.project.nba_notes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -60,7 +61,6 @@ public class NotesActivity extends AppCompatActivity {
         buttonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createNote();
                 Toast.makeText(context,"Nota creada",Toast.LENGTH_LONG).show();
 
             }
@@ -69,20 +69,22 @@ public class NotesActivity extends AppCompatActivity {
 
     }
     public void obtainNote(int id) {
-        JsonObjectRequest request = new  JsonObjectRequest (
+        JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
                 Request.Method.GET,
-                Server.name+"/api/auth/notes/" + id,
+                Server.name + "/api/auth/notes/" + id,
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         // Manejo correcto de la respuesta
+                        Log.d("NoteResponse", response.toString());
+
                         try {
                             String title = response.getString("title");
                             String content = response.getString("content");
                             noteTitle.setText(title);
                             noteContent.setText(content);
-                        } catch (JSONException e) {
+                         } catch (JSONException e) {
                             e.printStackTrace(); // Manejo del error
                         }
                     }
@@ -90,14 +92,16 @@ public class NotesActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context,"No se ha podido conectar al servidor",Toast.LENGTH_LONG).show();;
+                        Toast.makeText(context, "Error en la petición: " + error.toString(), Toast.LENGTH_LONG).show();
                     }
-                }
+                },
+                this // Pasa el contexto de la actividad
         );
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
     }
-    public void createNote() {
+
+    /*public void createNote() {
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("title", noteTitle.getText().toString());
@@ -125,5 +129,5 @@ public class NotesActivity extends AppCompatActivity {
         );
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
-    }
+    }*/
 }
