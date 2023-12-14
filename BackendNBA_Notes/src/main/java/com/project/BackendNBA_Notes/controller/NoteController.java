@@ -30,6 +30,11 @@ public class NoteController {
     public List<Note> getAllNotes() {
         return noteRepository.findAll();
     }
+
+    @GetMapping("/favorites")
+    public List<Note> getFavorites(){
+        return  noteRepository.getFavorites();
+    }
     @DeleteMapping("/list")
     public ResponseEntity<?> deleteMultipleNotes(@RequestBody List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
