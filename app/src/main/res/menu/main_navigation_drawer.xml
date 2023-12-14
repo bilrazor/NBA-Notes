@@ -5,12 +5,16 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/menu_item_start"
             android:title="Inicio"/>
         <item
+            android:id="@+id/menu_item_profile"
             android:title="Mi perfil"/>
         <item
+            android:id="@+id/menu_item_favourite"
             android:title="Notas favoritas"/>
         <item
+            android:id="@+id/menu_item_order"
             android:title="Ordenar notas"/>
 
     </group>

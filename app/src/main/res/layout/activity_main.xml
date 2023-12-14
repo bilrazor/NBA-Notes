@@ -20,18 +20,11 @@
             android:background="?attr/colorPrimary"
             tools:ignore="MissingConstraints" />
 
-
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/main_drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginRight="-65dp">
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragment_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
 
             <com.google.android.material.navigation.NavigationView
                 android:id="@+id/main_navigation_view"
