@@ -11,9 +11,6 @@ import java.util.List;
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
-    @Query("SELECT n FROM Note n WHERE n.favorite = true")
-    List<Note> getFavorites();
-
     // Método para encontrar todas las notas pertenecientes a un usuario específico
     List<Note> findAllByUserId(Long userId);
 

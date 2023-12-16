@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class NoteDTO {
     private Long id;
+    private String title;
     private String content;
     private boolean favorite;
     private LocalDateTime lastModified;
