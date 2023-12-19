@@ -19,12 +19,15 @@ public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String title;
     @Lob
     private String content;
     private boolean favorite;
     @Column
     private LocalDateTime lastModified;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     @PrePersist
     @PreUpdate
     private void setLastModified() {

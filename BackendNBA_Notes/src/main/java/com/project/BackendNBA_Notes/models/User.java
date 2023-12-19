@@ -25,6 +25,10 @@ public class User {
     private String jwtToken;
     private boolean isOnline;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Note> notes = new HashSet<>();
+
+
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
