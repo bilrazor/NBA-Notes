@@ -39,7 +39,7 @@ public class NotesActivity extends AppCompatActivity {
         ImageButton buttonCheck = findViewById(R.id.buttonCheck);
         noteTitle = findViewById(R.id.noteTitle);
         noteContent = findViewById(R.id.noteContent);
-        obtainNote(1);
+        obtainNote(2);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +61,7 @@ public class NotesActivity extends AppCompatActivity {
         buttonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                createNote();
                 Toast.makeText(context,"Nota creada",Toast.LENGTH_LONG).show();
 
             }
@@ -101,7 +102,7 @@ public class NotesActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    /*public void createNote() {
+    public void createNote() {
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("title", noteTitle.getText().toString());
@@ -125,9 +126,11 @@ public class NotesActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // Manejo de error
                     }
-                }
+                },
+                this
+
         );
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
-    }*/
+    }
 }
