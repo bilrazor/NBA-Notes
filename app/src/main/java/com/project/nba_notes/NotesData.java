@@ -1,13 +1,18 @@
 package com.project.nba_notes;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 
 
 public class NotesData {
     private String title;
     private String content;
     private boolean favorite;
-    private LocalDateTime lastModified;
+    private Date lastModified;
 
     public String getTitle() {
         return title;
@@ -33,11 +38,11 @@ public class NotesData {
         this.favorite = favorite;
     }
 
-    public LocalDateTime getLastModified() {
+    public Date getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(LocalDateTime lastModified) {
+    public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
 }

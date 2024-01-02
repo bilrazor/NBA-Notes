@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
@@ -18,18 +19,33 @@
         android:inputType="textMultiLine"
         android:gravity="top"
         />
-    <EditText
-        android:id="@+id/noteContent"
+    <TextView
+        android:id="@+id/noteDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/noteTitle"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:hint="Contenido de la nota"
-        android:inputType="textMultiLine"
+        android:layout_marginTop="10dp"
         android:gravity="top"
+        android:hint="fecha de la nota"
         />
+    <ScrollView
+        android:layout_marginTop="10dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/noteDate"
+        app:layout_constraintBottom_toTopOf="@id/bottomButtonContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <EditText
+            android:id="@+id/noteContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contenido de la nota"
+            android:inputType="textMultiLine"
+            android:gravity="top" />
+    </ScrollView>
     <LinearLayout
         android:id="@+id/backButtonContainer"
         android:layout_width="wrap_content"
@@ -57,12 +73,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
          >
-        <ImageButton
-            android:id="@+id/buttonStar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:src="@drawable/baseline_star_border_24" />
+
         <ImageButton
             android:id="@+id/buttonUndo"
             android:layout_width="wrap_content"
@@ -74,6 +85,8 @@
             android:id="@+id/buttonRedo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_redo_24" />
 
@@ -85,5 +98,34 @@
             android:src="@drawable/baseline_check_24" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/bottomButtonContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@android:color/white"
+        >
+
+
+        <ImageButton
+            android:id="@+id/noteLetter"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/baseline_spellcheck_24" />
+
+        <Space
+            android:layout_width="180dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/noteDelete"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/baseline_delete_24" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
