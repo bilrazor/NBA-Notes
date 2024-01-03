@@ -92,15 +92,11 @@ public class NotesActivity extends AppCompatActivity {
         });
 
         // Listener para cuando el texto cambia
-        // Listener para cuando el texto cambia
-        noteContent.addTextChangedListener(new TextWatcher() {
-            private Handler handler = new Handler();
-            private Runnable runnable;
+        noteTitle.addTextChangedListener(new TextWatcher() {
             private String previousText = "";
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                handler.removeCallbacks(runnable);
                 previousText = s.toString();
             }
 
@@ -111,16 +107,42 @@ public class NotesActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!s.toString().equals(undoRedoHelper.getCurrentState())) {
-                            undoRedoHelper.onTextChanged(s.toString());
-                        }
-                    }
-                };
-                handler.postDelayed(runnable, 100); // retraso de 1 segundo
+                String newTitle = s.toString();
+                String content = noteContent.getText().toString();
+                int titleCursorPosition = noteTitle.getSelectionStart();
+                int contentCursorPosition = noteContent.getSelectionStart();
+                if (!newTitle.equals(previousText)) {
+                    undoRedoHelper.onTextChanged(newTitle, content, titleCursorPosition, contentCursorPosition);
+                    previousText = newTitle;
+                }
             }
+        });
+
+        noteContent.addTextChangedListener(new TextWatcher() {
+            private String previousText = "";
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previousText = s.toString();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No se necesita implementar nada aquí
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String newContent = s.toString();
+                String title = noteTitle.getText().toString();
+                int titleCursorPosition = noteTitle.getSelectionStart();
+                int contentCursorPosition = noteContent.getSelectionStart();
+                if (!newContent.equals(previousText)) {
+                    undoRedoHelper.onTextChanged(title, newContent, titleCursorPosition, contentCursorPosition);
+                    previousText = newContent;
+                }
+            }
+
         });
 
 
@@ -128,28 +150,29 @@ public class NotesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!undoRedoHelper.isUndoStackEmpty()) {
-                    String previousState = undoRedoHelper.undo();
-                    noteContent.setText(previousState);
-
-                    // Coloca el cursor al final del texto
-                    noteContent.setSelection(previousState.length());
+                    NoteState previousState = undoRedoHelper.undo();
+                    noteTitle.setText(previousState.getTitle());
+                    noteContent.setText(previousState.getContent());
+                    noteTitle.setSelection(previousState.getTitleCursorPosition());
+                    noteContent.setSelection(previousState.getContentCursorPosition());
                 }
             }
         });
-
 
         buttonRedo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!undoRedoHelper.isRedoStackEmpty()) {
-                    String nextState = undoRedoHelper.redo();
-                    noteContent.setText(nextState);
-
-                    // Coloca el cursor al final del texto
-                    noteContent.setSelection(nextState.length());
+                    NoteState nextState = undoRedoHelper.redo();
+                    noteTitle.setText(nextState.getTitle());
+                    noteContent.setText(nextState.getContent());
+                    noteTitle.setSelection(nextState.getTitleCursorPosition());
+                    noteContent.setSelection(nextState.getContentCursorPosition());
                 }
             }
         });
+
+
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,12 +183,12 @@ public class NotesActivity extends AppCompatActivity {
     }
 
 
-        // Método para obtener una nota desde un servidor mediante una petición GET.
-    public void obtainNote(int id) {
+    // Método para obtener una nota desde un servidor mediante una petición GET.
+    public void obtainNote(int noteId) {
         // Crea y configura la petición.
         JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
                 Request.Method.GET,
-                Server.name + "/api/auth/notes/" + id,
+                Server.name + "/api/auth/notes/" + noteId,
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override

@@ -3,42 +3,41 @@ package com.project.nba_notes;
 import java.util.Stack;
 
 public class UndoRedoHelper {
-    private Stack<String> undoStack = new Stack<>();
-    private Stack<String> redoStack = new Stack<>();
-    private String currentState = ""; // Añadido para mantener el estado actual del texto
+    private Stack<NoteState> undoStack = new Stack<>();
+    private Stack<NoteState> redoStack = new Stack<>();
+    private NoteState currentState;
 
-    public String getCurrentState() {
+    public UndoRedoHelper() {
+        currentState = new NoteState("", "",0,0);
+    }
+
+    public NoteState getCurrentState() {
         return currentState;
     }
 
-    public void setCurrentState(String text) {
-        currentState = text;
+    // Llamado cuando hay un cambio en el título o contenido
+    public void onTextChanged(String title, String content, int titleCursorPosition, int contentCursorPosition) {
+        if (!title.equals(currentState.getTitle()) || !content.equals(currentState.getContent())) {
+            undoStack.push(new NoteState(currentState.getTitle(), currentState.getContent(),currentState.getTitleCursorPosition(),currentState.getContentCursorPosition()));
+            redoStack.clear();
+            currentState = new NoteState(title, content, titleCursorPosition, contentCursorPosition);
+        }
     }
 
-    public void onTextChanged(String text) {
-        undoStack.push(currentState);
-        redoStack.clear();
-        currentState = text;
-    }
-
-    public String undo() {
+    public NoteState undo() {
         if (!undoStack.isEmpty()) {
-            redoStack.push(currentState);
+            redoStack.push(new NoteState(currentState.getTitle(), currentState.getContent(),currentState.getTitleCursorPosition(),currentState.getContentCursorPosition()));
             currentState = undoStack.pop();
-            return currentState;
-        } else {
-            return currentState; // Devuelve el estado actual si la pila de deshacer está vacía
         }
+        return currentState;
     }
 
-    public String redo() {
+    public NoteState redo() {
         if (!redoStack.isEmpty()) {
-            undoStack.push(currentState);
+            undoStack.push(new NoteState(currentState.getTitle(), currentState.getContent(),currentState.getTitleCursorPosition(),currentState.getContentCursorPosition()));
             currentState = redoStack.pop();
-            return currentState;
-        } else {
-            return currentState; // Devuelve el estado actual si la pila de rehacer está vacía
         }
+        return currentState;
     }
 
     public boolean isUndoStackEmpty() {
