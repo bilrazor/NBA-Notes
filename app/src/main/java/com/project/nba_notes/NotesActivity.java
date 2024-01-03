@@ -1,6 +1,7 @@
 package com.project.nba_notes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,6 +47,8 @@ public class NotesActivity extends AppCompatActivity {
     private Stack<String> redoStack = new Stack<>();
 
     private UndoRedoHelper undoRedoHelper = new UndoRedoHelper();
+    private boolean isLoadingData = false;
+
 
     // Método que se llama cuando se crea la actividad.
     @Override
@@ -64,9 +67,25 @@ public class NotesActivity extends AppCompatActivity {
         noteTitle = findViewById(R.id.noteTitle);
         noteDate = findViewById(R.id.noteDate);
         noteContent = findViewById(R.id.noteContent);
-
+        buttonUndo.setEnabled(false);
+        buttonRedo.setEnabled(false);
+        buttonCheck.setEnabled(false);
+        buttonUndo.setAlpha(0.4f);
+        buttonRedo.setAlpha(0.4f);
+        buttonCheck.setAlpha(0.4f);
         // Llama al método para obtener una nota específica.
-        obtainNote(1);
+        Intent intent = getIntent();
+        int noteId = intent.getIntExtra("NOTE_ID", -1);
+
+        if (noteId == -1) {
+            noteTitle.setText("");
+            noteContent.setText("");
+            // Ocultar la fecha porque aún no se ha creado la nota
+            noteDate.setVisibility(View.GONE);
+        } else {
+            // Estamos editando una nota existente
+            obtainNote(noteId);  // Carga los detalles de la nota para editar
+        }
 
         // Establece los listeners para los botones. Cuando se hace clic, se ejecutan las acciones correspondientes.
         buttonBack.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +94,17 @@ public class NotesActivity extends AppCompatActivity {
                 // Acción para el botón de regresar.
             }
         });
+        buttonCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (noteId == -1) {
+                    createNote(); // Crea una nueva nota con los datos actuales de la UI
+                } else {
+                    updateNote(noteId); // Actualiza la nota existente con el ID y los datos actuales de la UI
+                }
+            }
+        });
+
         buttonNoteLetter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,15 +137,23 @@ public class NotesActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (isLoadingData) {
+                    return; // Ignorar cambios mientras se está cargando datos
+                }
                 String newTitle = s.toString();
                 String content = noteContent.getText().toString();
                 int titleCursorPosition = noteTitle.getSelectionStart();
                 int contentCursorPosition = noteContent.getSelectionStart();
                 if (!newTitle.equals(previousText)) {
-                    undoRedoHelper.onTextChanged(newTitle, content, titleCursorPosition, contentCursorPosition);
+                    // Aquí agregamos "title" como el último campo modificado
+                    undoRedoHelper.onTextChanged(newTitle, content, titleCursorPosition, contentCursorPosition, "title");
                     previousText = newTitle;
                 }
+                updateUndoRedoButtonState();
+                buttonCheck.setEnabled(true);
+                buttonCheck.setAlpha(1.0f);
             }
+
         });
 
         noteContent.addTextChangedListener(new TextWatcher() {
@@ -133,14 +171,21 @@ public class NotesActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (isLoadingData) {
+                    return; // Ignorar cambios mientras se está cargando datos
+                }
                 String newContent = s.toString();
-                String title = noteTitle.getText().toString();
-                int titleCursorPosition = noteTitle.getSelectionStart();
-                int contentCursorPosition = noteContent.getSelectionStart();
                 if (!newContent.equals(previousText)) {
-                    undoRedoHelper.onTextChanged(title, newContent, titleCursorPosition, contentCursorPosition);
+                    String title = noteTitle.getText().toString();
+                    int titleCursorPosition = noteTitle.getSelectionStart();
+                    int contentCursorPosition = noteContent.getSelectionStart();
+                    // Aquí agregamos "content" como el último campo modificado
+                    undoRedoHelper.onTextChanged(title, newContent, titleCursorPosition, contentCursorPosition, "content");
                     previousText = newContent;
                 }
+                updateUndoRedoButtonState();
+                buttonCheck.setEnabled(true);
+                buttonCheck.setAlpha(1.0f);
             }
 
         });
@@ -153,11 +198,22 @@ public class NotesActivity extends AppCompatActivity {
                     NoteState previousState = undoRedoHelper.undo();
                     noteTitle.setText(previousState.getTitle());
                     noteContent.setText(previousState.getContent());
-                    noteTitle.setSelection(previousState.getTitleCursorPosition());
-                    noteContent.setSelection(previousState.getContentCursorPosition());
+
+                    // Asegúrate de enfocar y mover el cursor al campo correcto
+                    if (previousState.getLastModifiedField().equals("title")) {
+                        noteTitle.requestFocus();
+                        noteTitle.setSelection(previousState.getTitleCursorPosition());
+                    } else {
+                        noteContent.requestFocus();
+                        noteContent.setSelection(previousState.getContentCursorPosition());
+                    }
                 }
+                updateUndoRedoButtonState();
             }
         });
+
+// Similar para el botón redo
+
 
         buttonRedo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,9 +222,17 @@ public class NotesActivity extends AppCompatActivity {
                     NoteState nextState = undoRedoHelper.redo();
                     noteTitle.setText(nextState.getTitle());
                     noteContent.setText(nextState.getContent());
-                    noteTitle.setSelection(nextState.getTitleCursorPosition());
-                    noteContent.setSelection(nextState.getContentCursorPosition());
+
+                    // Asegúrate de enfocar y mover el cursor al campo correcto
+                    if (nextState.getLastModifiedField().equals("title")) {
+                        noteTitle.requestFocus();
+                        noteTitle.setSelection(nextState.getTitleCursorPosition());
+                    } else {
+                        noteContent.requestFocus();
+                        noteContent.setSelection(nextState.getContentCursorPosition());
+                    }
                 }
+                updateUndoRedoButtonState();
             }
         });
 
@@ -176,7 +240,11 @@ public class NotesActivity extends AppCompatActivity {
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteNote(9);
+                if (noteId != -1) {
+                    deleteNote(noteId);
+                } else {
+                    // Manejar el caso en el que no se pase un ID válido
+                }
             }
         });
 
@@ -185,6 +253,7 @@ public class NotesActivity extends AppCompatActivity {
 
     // Método para obtener una nota desde un servidor mediante una petición GET.
     public void obtainNote(int noteId) {
+        isLoadingData = true;
         // Crea y configura la petición.
         JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
                 Request.Method.GET,
@@ -209,12 +278,22 @@ public class NotesActivity extends AppCompatActivity {
                             SimpleDateFormat friendlyFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                             String formattedDate = friendlyFormat.format(date);
 
-                            noteTitle.setText(title);
+                            noteTitle.setText(title.isEmpty() ? "" : title);
                             noteDate.setText(formattedDate);
                             noteContent.setText(content);
+                            noteTitle.setSelection(title.length());
+                            noteContent.setSelection(content.length());
+                            String currentTitle = noteTitle.getText().toString();
+                            String currentContent = noteContent.getText().toString();
+                            isLoadingData = false;
+                            undoRedoHelper.setInitialState(currentTitle, currentContent, title.length(), content.length());
+                            updateUndoRedoButtonState();
                         } catch (JSONException | ParseException e) {
                             e.printStackTrace();
                         }
+
+
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -294,6 +373,45 @@ public class NotesActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
     }
+    public void updateNote(int noteId) {
+        // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("title", noteTitle.getText().toString());
+            requestBody.put("content", noteContent.getText().toString());
+            requestBody.put("favorite", false); // O cómo determines el estado favorito en tu UI.
+        } catch (JSONException e) {
+            // Manejo de excepciones JSON.
+            e.printStackTrace();
+        }
+
+        // Configura y envía la petición PUT.
+        JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
+                Request.Method.PUT,
+                Server.name + "/api/auth/notes/" + noteId,
+                requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Muestra un mensaje de éxito y maneja la respuesta, posiblemente actualizando la UI.
+                        Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Manejo de errores de la petición.
+                        Toast.makeText(context, "Error al actualizar la nota: " + error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                },
+                this // Aquí necesitas pasar el token o las credenciales de autenticación, dependiendo de cómo lo manejes.
+        );
+
+        // Añade la petición a la cola y la ejecuta.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(request);
+    }
+
 
     private void increaseTextSize() {
         noteContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteContent.getTextSize() + 5);
@@ -304,5 +422,20 @@ public class NotesActivity extends AppCompatActivity {
         noteContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteContent.getTextSize() - 5);
         noteTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteTitle.getTextSize() - 5);
     }
+    private void updateUndoRedoButtonState() {
+        ImageButton buttonUndo = findViewById(R.id.buttonUndo);
+        ImageButton buttonRedo = findViewById(R.id.buttonRedo);
+
+        boolean isUndoAvailable = !undoRedoHelper.isUndoStackEmpty();
+        boolean isRedoAvailable = !undoRedoHelper.isRedoStackEmpty();
+
+        buttonUndo.setEnabled(isUndoAvailable);
+        buttonRedo.setEnabled(isRedoAvailable);
+
+        // Cambiar la opacidad de los botones para indicar su estado
+        buttonUndo.setAlpha(isUndoAvailable ? 1.0f : 0.4f); // 1.0 para activo, 0.4 para deshabilitado
+        buttonRedo.setAlpha(isRedoAvailable ? 1.0f : 0.4f);
+    }
+
 
 }
