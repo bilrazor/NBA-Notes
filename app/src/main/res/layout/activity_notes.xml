@@ -44,7 +44,13 @@
             android:layout_height="wrap_content"
             android:hint="Contenido de la nota"
             android:inputType="textMultiLine"
-            android:gravity="top" />
+            android:gravity="top"
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:layout_margin="4dp"
+            android:padding="16dp"
+        />
+
     </ScrollView>
     <LinearLayout
         android:id="@+id/backButtonContainer"
@@ -72,6 +78,8 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/white"
+
          >
 
         <ImageButton
@@ -106,26 +114,40 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@android:color/white"
+        android:elevation="8dp"
+        android:layout_marginTop="2dp"
+        android:padding="3dp"
         >
 
 
         <ImageButton
-            android:id="@+id/noteLetter"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:id="@+id/buttonLetter"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_spellcheck_24" />
 
         <Space
-            android:layout_width="180dp"
+            android:layout_width="75dp"
+            android:layout_height="match_parent" />
+        <ImageButton
+            android:id="@+id/buttonFavorite"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/baseline_star_border_24" />
+        <Space
+            android:layout_width="75dp"
             android:layout_height="match_parent" />
 
         <ImageButton
-            android:id="@+id/noteDelete"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:id="@+id/buttonDelete"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_delete_24" />
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

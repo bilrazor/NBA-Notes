@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,13 +43,15 @@ public class NotesActivity extends AppCompatActivity {
     private EditText noteTitle;
     private EditText noteContent;
     private TextView noteDate;
+
+    private boolean noteFavorite = false;
     private boolean isTextSizeIncreased = false;
     private Stack<String> undoStack = new Stack<>();
     private Stack<String> redoStack = new Stack<>();
 
     private UndoRedoHelper undoRedoHelper = new UndoRedoHelper();
     private boolean isLoadingData = false;
-
+    private int noteId = -1;
 
     // Método que se llama cuando se crea la actividad.
     @Override
@@ -62,20 +65,26 @@ public class NotesActivity extends AppCompatActivity {
         ImageButton buttonUndo = findViewById(R.id.buttonUndo);
         ImageButton buttonRedo = findViewById(R.id.buttonRedo);
         ImageButton buttonCheck = findViewById(R.id.buttonCheck);
-        ImageButton buttonNoteLetter = findViewById(R.id.noteLetter);
-        ImageButton buttonDelete = findViewById(R.id.noteDelete);
+        ImageButton buttonNoteLetter = findViewById(R.id.buttonLetter);
+        ImageButton buttonDelete = findViewById(R.id.buttonDelete);
+        ImageButton buttonFavorite = findViewById(R.id.buttonFavorite); // Asegúrate de tener este botón en tu layout
+
         noteTitle = findViewById(R.id.noteTitle);
         noteDate = findViewById(R.id.noteDate);
         noteContent = findViewById(R.id.noteContent);
         buttonUndo.setEnabled(false);
         buttonRedo.setEnabled(false);
         buttonCheck.setEnabled(false);
+        Intent intent = getIntent();
+        this.noteId = intent.getIntExtra("NOTE_ID", 29);
+
+        // Deshabilitar el botón de eliminar si estamos creando una nueva nota
+        buttonDelete.setEnabled(noteId != -1);
+        buttonDelete.setAlpha(noteId != -1 ? 1.0f : 0.4f);
         buttonUndo.setAlpha(0.4f);
         buttonRedo.setAlpha(0.4f);
         buttonCheck.setAlpha(0.4f);
         // Llama al método para obtener una nota específica.
-        Intent intent = getIntent();
-        int noteId = intent.getIntExtra("NOTE_ID", -1);
 
         if (noteId == -1) {
             noteTitle.setText("");
@@ -91,7 +100,7 @@ public class NotesActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Acción para el botón de regresar.
+                onBack();
             }
         });
         buttonCheck.setOnClickListener(new View.OnClickListener() {
@@ -209,6 +218,8 @@ public class NotesActivity extends AppCompatActivity {
                     }
                 }
                 updateUndoRedoButtonState();
+                checkIfTextFieldsAreEmpty();
+
             }
         });
 
@@ -242,17 +253,43 @@ public class NotesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (noteId != -1) {
                     deleteNote(noteId);
+                    finish();
                 } else {
                     // Manejar el caso en el que no se pase un ID válido
                 }
             }
         });
+        buttonFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Cambia el estado de favorito
+                noteFavorite = !noteFavorite;
+                // Actualiza el icono del botón de favorito
+                buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
+
+
+                // Si noteId == -1, esto significa que es una nueva nota, por lo que no es necesario actualizar aún.
+            }
+        });
+
+
 
     }
+    private void checkIfTextFieldsAreEmpty() {
+        ImageButton buttonCheck = findViewById(R.id.buttonCheck);
 
+        String title = noteTitle.getText().toString();
+        String content = noteContent.getText().toString();
+        boolean isAnyFieldNotEmpty = !title.isEmpty() || !content.isEmpty();
+
+        buttonCheck.setEnabled(isAnyFieldNotEmpty);
+        buttonCheck.setAlpha(isAnyFieldNotEmpty ? 1.0f : 0.4f);
+    }
 
     // Método para obtener una nota desde un servidor mediante una petición GET.
     public void obtainNote(int noteId) {
+        ImageButton buttonFavorite = findViewById(R.id.buttonFavorite); // Asegúrate de tener este botón en tu layout
+
         isLoadingData = true;
         // Crea y configura la petición.
         JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
@@ -269,7 +306,10 @@ public class NotesActivity extends AppCompatActivity {
                             String title = response.getString("title");
                             String dateString = response.getString("lastModified");
                             String content = response.getString("content");
+                            boolean favorite = response.getBoolean("favorite");
 
+                            noteFavorite = response.getBoolean("favorite");
+                            buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
                             // Convertir la cadena de fecha a un objeto Date
                             SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                             Date date = isoFormat.parse(dateString);
@@ -311,12 +351,15 @@ public class NotesActivity extends AppCompatActivity {
     }
 
     // Método para crear una nueva nota en el servidor mediante una petición POST.
+    // Método para crear una nueva nota en el servidor mediante una petición POST.
     public void createNote() {
+        ImageButton buttonDelete = findViewById(R.id.buttonDelete);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("title", noteTitle.getText().toString());
             requestBody.put("content", noteContent.getText().toString());
+            requestBody.put("favorite", noteFavorite);
         } catch (JSONException e) {
             // Manejo de excepciones JSON.
             throw new RuntimeException(e);
@@ -332,6 +375,21 @@ public class NotesActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         // Muestra un mensaje de éxito.
                         Toast.makeText(context,"Nota creada",Toast.LENGTH_SHORT).show();
+                        try {
+                            // Aquí asumiendo que el servidor devuelve el ID de la nota recién creada
+                            int newNoteId = response.getInt("id"); // Asegúrate de que "id" sea la clave correcta
+                            noteId = newNoteId; // Actualiza el noteId con el ID de la nueva nota
+
+                            hideKeyboard();
+                            resetFocus();
+                            buttonDelete.setEnabled(true);
+                            buttonDelete.setAlpha(1.0f); // Restaurar la opacidad para mostrarlo como habilitado
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -346,10 +404,11 @@ public class NotesActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
     }
+
     // Método para eliminar una nota en el servidor mediante una petición DELETE.
     public void deleteNote(int noteId) {
         String url = Server.name + "/api/auth/notes/" + noteId;
-
+        ImageButton buttonDelete = findViewById(R.id.buttonDelete);
         StringRequestWithAuthHeader request = new StringRequestWithAuthHeader(
                 Request.Method.DELETE,
                 url,
@@ -358,6 +417,9 @@ public class NotesActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Toast.makeText(context, "Nota eliminada con éxito", Toast.LENGTH_SHORT).show();
                         // Aquí puedes añadir cualquier lógica adicional necesaria tras la eliminación exitosa.
+                        buttonDelete.setEnabled(false);
+                        buttonDelete.setAlpha(0.4f); // Cambiar la opacidad para mostrarlo como deshabilitado
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -379,7 +441,7 @@ public class NotesActivity extends AppCompatActivity {
         try {
             requestBody.put("title", noteTitle.getText().toString());
             requestBody.put("content", noteContent.getText().toString());
-            requestBody.put("favorite", false); // O cómo determines el estado favorito en tu UI.
+            requestBody.put("favorite", noteFavorite);
         } catch (JSONException e) {
             // Manejo de excepciones JSON.
             e.printStackTrace();
@@ -395,6 +457,8 @@ public class NotesActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         // Muestra un mensaje de éxito y maneja la respuesta, posiblemente actualizando la UI.
                         Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
+                        hideKeyboard();
+                        resetFocus();
                     }
                 },
                 new Response.ErrorListener() {
@@ -436,6 +500,38 @@ public class NotesActivity extends AppCompatActivity {
         buttonUndo.setAlpha(isUndoAvailable ? 1.0f : 0.4f); // 1.0 para activo, 0.4 para deshabilitado
         buttonRedo.setAlpha(isRedoAvailable ? 1.0f : 0.4f);
     }
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    private void resetFocus() {
+        noteTitle.clearFocus();
+        noteContent.clearFocus();
 
+    }
+    public void onBack() {
+        // Guardar la nota si hay contenido antes de ir hacia atrás
+        if (!isEmpty(noteTitle) || !isEmpty(noteContent)) {
+            saveNote();
+        }
+        finish();
+    }
+    private boolean isEmpty(EditText editText) {
+        return editText.getText().toString().trim().isEmpty();
+    }
+    private void saveNote() {
+        if (noteId == -1) {
+            // Solo crear una nueva nota si el título o el contenido no están vacíos
+            if (!isEmpty(noteTitle) || !isEmpty(noteContent)) {
+                createNote();
+            }
+        } else {
+            // Si estamos editando una nota existente, siempre intentar actualizar
+            updateNote(noteId);
+        }
+    }
 
 }
