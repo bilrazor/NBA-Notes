@@ -53,7 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                Server.name + "/users",
+                Server.name + "/api/auth/signup",
                 requestBody,
                 new Response.Listener<JSONObject>() {
                     @Override
