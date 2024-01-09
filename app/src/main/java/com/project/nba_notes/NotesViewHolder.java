@@ -83,9 +83,14 @@ public class NotesViewHolder extends RecyclerView.ViewHolder {
                 postData,
                 response -> {
                     try {
+                        NotesData updatedData = new NotesData(response);
                         // Suponiendo que la respuesta contiene el estado de favoritos actualizado
                         JSONObject responseObject = new JSONObject(response.toString());
                         boolean updatedFavoriteStatus = responseObject.getBoolean("favorite");
+
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+                        note_last_modified.setText(dateFormat.format(updatedData.getLastModified()));
 
                         // Actualizar el objeto de datos y la UI
                         data.setFavorite(updatedFavoriteStatus);
