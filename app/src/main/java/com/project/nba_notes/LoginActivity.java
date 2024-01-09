@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                Server.name + "/sessions",
+                Server.name + "/api/auth/signin",
                 requestBody,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("VALID_TOKEN", receivedToken);
                         editor.commit();
                         finish();
-                        Intent intent=new Intent(getApplicationContext(),StatusActivity.class);
+                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
                         startActivity(intent);
 
                     }

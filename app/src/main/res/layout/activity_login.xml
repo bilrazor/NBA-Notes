@@ -7,24 +7,25 @@
     <EditText
         android:id="@+id/edit_text3"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintWidth_percent="0.6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="48dp"
+        android:hint="Contraseña"
         android:inputType="textPassword"
-        android:hint="Contraseña"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.593"
+        app:layout_constraintWidth_percent="0.6" />
 
     <EditText
         android:id="@+id/edit_text4"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintWidth_percent="0.6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="48dp"
+        android:hint="eric.doe"
         app:layout_constraintBottom_toTopOf="@id/edit_text3"
-        android:hint="eric.doe"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.6" />
 
     <Button
         android:id="@+id/button_iniciarSesion"
