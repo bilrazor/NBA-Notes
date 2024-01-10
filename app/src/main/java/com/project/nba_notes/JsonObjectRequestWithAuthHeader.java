@@ -31,7 +31,7 @@ public class JsonObjectRequestWithAuthHeader extends JsonObjectRequest {
         // Recupera el token de SharedPreferences
         SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
         // String token = sharedPreferences.getString("token", "");
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA0ODEwNTU1LCJpYXQiOjE3MDQyMTA1NTV9.XVrIHwRnKq_tW89ODcV3vPcA_S48aJuwZldn_DS_NlPzLi-29b3bnGo4mVLP--zruTarEnwlNTMZm06TLSvT0g";
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA1NDkyNzE2LCJpYXQiOjE3MDQ4OTI3MTZ9.pTpixkyu_txQP_73eAk7BczfFKq0TKJqFK5J7ubWzslLvlwkr3MB-Z6G6lWlsZgYE6vhP5PC3x1vkrxZOBgbyw";
         headers.put("Authorization","Bearer " + token);
         return headers;
     }

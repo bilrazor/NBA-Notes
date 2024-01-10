@@ -44,6 +44,9 @@ public class NotesActivity extends AppCompatActivity {
     private EditText noteContent;
     private TextView noteDate;
 
+    private ImageButton buttonCheck;
+    private ImageButton buttonDelete;
+
     private boolean noteFavorite = false;
     private boolean isTextSizeIncreased = false;
     private Stack<String> undoStack = new Stack<>();
@@ -64,9 +67,9 @@ public class NotesActivity extends AppCompatActivity {
         ImageButton buttonBack = findViewById(R.id.buttonBack);
         ImageButton buttonUndo = findViewById(R.id.buttonUndo);
         ImageButton buttonRedo = findViewById(R.id.buttonRedo);
-        ImageButton buttonCheck = findViewById(R.id.buttonCheck);
+        buttonCheck = findViewById(R.id.buttonCheck);
         ImageButton buttonNoteLetter = findViewById(R.id.buttonLetter);
-        ImageButton buttonDelete = findViewById(R.id.buttonDelete);
+        buttonDelete = findViewById(R.id.buttonDelete);
         ImageButton buttonFavorite = findViewById(R.id.buttonFavorite); // Asegúrate de tener este botón en tu layout
 
         noteTitle = findViewById(R.id.noteTitle);
@@ -76,7 +79,7 @@ public class NotesActivity extends AppCompatActivity {
         buttonRedo.setEnabled(false);
         buttonCheck.setEnabled(false);
         Intent intent = getIntent();
-        this.noteId = intent.getIntExtra("NOTE_ID", 29);
+        this.noteId = intent.getIntExtra("NOTE_ID", -1);
 
         // Deshabilitar el botón de eliminar si estamos creando una nueva nota
         buttonDelete.setEnabled(noteId != -1);
@@ -106,11 +109,7 @@ public class NotesActivity extends AppCompatActivity {
         buttonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (noteId == -1) {
-                    createNote(); // Crea una nueva nota con los datos actuales de la UI
-                } else {
-                    updateNote(noteId); // Actualiza la nota existente con el ID y los datos actuales de la UI
-                }
+                saveNote();
             }
         });
 
@@ -354,6 +353,7 @@ public class NotesActivity extends AppCompatActivity {
     // Método para crear una nueva nota en el servidor mediante una petición POST.
     public void createNote() {
         ImageButton buttonDelete = findViewById(R.id.buttonDelete);
+        ImageButton buttonCheck = findViewById(R.id.buttonCheck);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -384,7 +384,7 @@ public class NotesActivity extends AppCompatActivity {
                             resetFocus();
                             buttonDelete.setEnabled(true);
                             buttonDelete.setAlpha(1.0f); // Restaurar la opacidad para mostrarlo como habilitado
-
+                            resetCheck();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -436,6 +436,7 @@ public class NotesActivity extends AppCompatActivity {
         queue.add(request);
     }
     public void updateNote(int noteId) {
+        ImageButton buttonCheck = findViewById(R.id.buttonCheck);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -459,6 +460,7 @@ public class NotesActivity extends AppCompatActivity {
                         Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
                         hideKeyboard();
                         resetFocus();
+                        resetCheck();
                     }
                 },
                 new Response.ErrorListener() {
@@ -512,6 +514,17 @@ public class NotesActivity extends AppCompatActivity {
         noteContent.clearFocus();
 
     }
+    private void resetCheck(){
+        buttonCheck.setEnabled(false);
+        buttonCheck.setAlpha(0.4f);
+    }
+    private void resetDelete(){
+
+    }
+    private void activeDelete(){
+        buttonDelete.setEnabled(true);
+        buttonDelete.setAlpha(1.0f);
+    }
     public void onBack() {
         // Guardar la nota si hay contenido antes de ir hacia atrás
         if (!isEmpty(noteTitle) || !isEmpty(noteContent)) {
@@ -527,10 +540,12 @@ public class NotesActivity extends AppCompatActivity {
             // Solo crear una nueva nota si el título o el contenido no están vacíos
             if (!isEmpty(noteTitle) || !isEmpty(noteContent)) {
                 createNote();
+
             }
         } else {
             // Si estamos editando una nota existente, siempre intentar actualizar
             updateNote(noteId);
+
         }
     }
 
