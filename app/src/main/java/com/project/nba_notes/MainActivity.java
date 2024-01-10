@@ -66,12 +66,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if (id == R.id.menu_item_start)
-            fragmentManager.beginTransaction()
-                    .add(R.id.main_fragment_container, ProfileFragment.class, null)
-                    .commit();
-        else if (id == R.id.menu_item_profile);
+        if (id == R.id.menu_item_start);
             //transaction.replace(R.id.main_fragment_container, );
+        else if (id == R.id.menu_item_profile)
+            fragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, ProfileFragment.class, null)
+                .commit();
         else if (id == R.id.menu_item_favourite);
             //transaction.replace(R.id.main_fragment_container, );
         else if (id == R.id.menu_item_order);

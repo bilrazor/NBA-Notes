@@ -18,7 +18,30 @@
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
             android:background="?attr/colorPrimary"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NBA Notes"
+                    android:textSize="22sp"
+                    android:layout_marginTop="14dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:icon="@drawable/theme_swap_button"
+                    android:tint="#000000"
+                    android:text="A"
+                    android:layout_marginLeft="50dp"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/main_drawer_layout"
