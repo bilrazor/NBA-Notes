@@ -37,6 +37,7 @@ public class NotesViewHolder extends RecyclerView.ViewHolder {
 
     public void showData(NotesData data, Context context) {
         this.data = data; // Asignar los datos actuales a la variable de referencia
+
         note_title.setText(data.getTitle());
         note_content.setText(data.getContent());
         button_favorite.setImageResource(data.isFavorite() ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);

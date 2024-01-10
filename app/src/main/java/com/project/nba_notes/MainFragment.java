@@ -23,33 +23,64 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment {
+    private String category;  // Variable para almacenar la categoría actual
+    private RecyclerView recyclerView;  // Variable para referenciar el RecyclerView en la UI
 
     public MainFragment() {
-        // Constructor público vacío requerido
+        // Constructor público vacío requerido por Android para instanciar el fragmento
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Infla el layout para este fragmento
+        // Infla el layout XML asociado con este fragmento
         View rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        System.out.println("Estamos dentro de MainFragment");
+        System.out.println("Estamos dentro de MainFragment"); // Mensaje de depuración
 
-        // Encuentra el RecyclerView en el layout inflado
-        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
-        ImageButton buttonCreateNote = rootView.findViewById(R.id.buttonCreateNote);
-        // Establece un OnClickListener en el ImageButton
-        buttonCreateNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Crea un Intent para iniciar NotesActivity
-                Intent intent = new Intent(getActivity(), NotesActivity.class);
-                startActivity(intent);
+        // Verifica si el fragmento está asociado a una actividad
+        if (getActivity() != null) {
+            // Recupera argumentos pasados al fragmento, si existen
+            if (getArguments() != null) {
+                category = getArguments().getString("CATEGORY", "todas");
             }
-        });
-        // Crea el Request para la API
+
+            // Configuración del RecyclerView
+            recyclerView = rootView.findViewById(R.id.recycler_view);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+            // Configuración del botón para crear notas
+            ImageButton buttonCreateNote = rootView.findViewById(R.id.buttonCreateNote);
+            buttonCreateNote.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Inicia una nueva actividad al hacer clic en el botón
+                    Intent intent = new Intent(getActivity(), NotesActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            realizarFiltrado(); // Llama al método para filtrar datos basados en la categoría
+        }
+
+        return rootView; // Devuelve la vista del fragmento
+    }
+
+    private void realizarFiltrado() {
+        String url;
+        switch (category) {
+            case "favoritos":
+                url = Server.name + "/api/auth/notes/favorites"; // URL para notas favoritas
+                break;
+            case "todas":
+                url = Server.name + "/api/auth/notes"; // URL para todas las notas
+                break;
+            default:
+                url = ""; // URL por defecto o manejo de categoría desconocida
+                break;
+        }
+        // Solicitud de red para obtener los datos de las notas
         JsonArrayRequestWithAuthHeader request = new JsonArrayRequestWithAuthHeader(
                 Request.Method.GET,
-                Server.name + "/api/auth/notes",
+                url,
                 null,
                 response -> {
                     List<NotesData> allTheNotes = new ArrayList<>();
@@ -70,6 +101,7 @@ public class MainFragment extends Fragment {
                     }
                 },
                 error -> {
+                    // Verifica si el contexto de la actividad está disponible
                     if (getActivity() != null) {
                         // Muestra un mensaje más detallado
                         String mensajeError = error.getMessage() == null ? "Error desconocido" : error.getMessage();
@@ -78,13 +110,15 @@ public class MainFragment extends Fragment {
                     }
                 },getActivity()
         );
-
-        // Comprueba si el contexto de la actividad está disponible antes de hacer la solicitud
+        // Verifica si el contexto de la actividad está disponible
         if (getActivity() != null) {
+            // Crea una cola de solicitudes y añade la solicitud de red a ella
             RequestQueue queue = Volley.newRequestQueue(getActivity());
             queue.add(request);
         }
 
-        return rootView; // Retorna la vista creada
+
     }
+
 }
+

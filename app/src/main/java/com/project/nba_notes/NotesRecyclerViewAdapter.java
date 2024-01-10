@@ -11,40 +11,42 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class NotesRecyclerViewAdapter  extends RecyclerView.Adapter<NotesViewHolder> {
+public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesViewHolder> {
 
+    // Lista para almacenar los datos de las notas
     private List<NotesData> allTheData;
+    // Referencia a la actividad donde se usa este adaptador
     private Activity activity;
 
+    // Constructor del adaptador
     public NotesRecyclerViewAdapter(List<NotesData> allTheData, Activity activity) {
-        this.allTheData = allTheData;
-        this.activity = activity;
+        this.allTheData = allTheData; // Asigna los datos de las notas a la variable local
+        this.activity = activity;     // Asigna la actividad a la variable local
     }
-
 
     @NonNull
     @Override
     public NotesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Utiliza LayoutInflater para crear una nueva vista inflando el layout XML definido para cada elemento del RecyclerView.
-        // El contexto se obtiene del ViewGroup padre, que es el RecyclerView.
-        // 'false' indica que no queremos que la vista inflada se adjunte al ViewGroup padre inmediatamente.
+        // Infla la vista de cada elemento del RecyclerView
+        // Usa el layout 'notes_view_holder' para la vista de los elementos
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notes_view_holder, parent, false);
 
-        // Crea una instancia de PokemonViewHolder pasándole la vista inflada. Esta instancia es utilizada para mostrar los datos.
+        // Retorna una nueva instancia de NotesViewHolder con la vista inflada
         return new NotesViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(@NonNull NotesViewHolder holder, int position) {
-        // Obtiene el elemento de datos actual basándose en la posición.
+        // Obtiene el elemento de datos en la posición actual
         NotesData dataInPositionToBeRendered = allTheData.get(position);
-        // Llama al método showData del ViewHolder con el objeto de datos actual y la actividad.
-        // Este método es responsable de actualizar el contenido del ViewHolder con los datos del objeto PokemonData.
+
+        // Configura el ViewHolder con los datos del elemento y la actividad
         holder.showData(dataInPositionToBeRendered, activity);
     }
 
     @Override
     public int getItemCount() {
-        // Retorna el tamaño de la lista de datos que se provee al adaptador.
+        // Retorna el número total de elementos en la lista de datos
         return allTheData.size();
     }
 

@@ -20,6 +20,10 @@ public class MainActivity extends AppCompatActivity {
         // terminar con fragmentos superpuestos.
         if (savedInstanceState == null) {
             Fragment fragment = new MainFragment();
+            Bundle args = new Bundle();
+            // Aquí decides qué argumento pasar basado en la selección del usuario
+            args.putString("CATEGORY", "todas"); // O "favoritos"
+            fragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, fragment)
