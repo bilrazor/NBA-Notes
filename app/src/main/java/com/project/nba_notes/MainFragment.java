@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -35,13 +36,22 @@ public class MainFragment extends Fragment {
         // Infla el layout XML asociado con este fragmento
         View rootView = inflater.inflate(R.layout.main_fragment, container, false);
         System.out.println("Estamos dentro de MainFragment"); // Mensaje de depuración
+        TextView textViewTitle = rootView.findViewById(R.id.textViewTitle);
 
         // Verifica si el fragmento está asociado a una actividad
         if (getActivity() != null) {
             // Recupera argumentos pasados al fragmento, si existen
             if (getArguments() != null) {
                 category = getArguments().getString("CATEGORY", "todas");
+
+                if (category.equals("favoritos")) {
+                    textViewTitle.setText("Favoritos");
+                    textViewTitle.setVisibility(View.VISIBLE); // Hacer visible el título para favoritos
+                } else {
+                    textViewTitle.setVisibility(View.GONE); // Ocultar el título para otras categorías
+                }
             }
+
 
             // Configuración del RecyclerView
             recyclerView = rootView.findViewById(R.id.recycler_view);

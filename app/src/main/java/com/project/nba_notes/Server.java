@@ -30,4 +30,17 @@ public ResponseEntity<NoteDTO> updateNote(@PathVariable Long id,
 
     return ResponseEntity.ok(noteDTO);
 }
+
+
+    @GetMapping("/title")
+    public List<NoteDTO> searchNote(@RequestParam(name = "title", required=true) String title ,  @AuthenticationPrincipal UserDetailsImpl userDetails){
+        List<Note> notes = noteRepository.searchNotesByUserId(userDetails.getId(),title);
+        return notes.stream()
+                .map(dtoService::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+      @Query("SELECT n FROM Note n WHERE n.user.id = :userId AND n.title LIKE :title%")
+    List<Note> searchNotesByUserId(@Param("userId") Long userId, @Param("title") String title);
+
 */
