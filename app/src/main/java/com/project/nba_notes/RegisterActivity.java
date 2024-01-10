@@ -22,6 +22,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private EditText editTextUsername;
     private EditText editTextPassword;
+    private EditText editTextPassword2;
     private RequestQueue queue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,15 +31,22 @@ public class RegisterActivity extends AppCompatActivity {
 
         editTextUsername = findViewById(R.id.edit_text_username);
         editTextPassword = findViewById(R.id.edit_text_password);
+        editTextPassword2 = findViewById(R.id.edit_text_password_confirm);
         registerButton = findViewById(R.id.button_create_account);
 
         queue = Volley.newRequestQueue(this);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(RegisterActivity.this,"Nombre: "+editTextUsername.getText().toString(), Toast.LENGTH_LONG).show();
+                String password = editTextPassword.getText().toString();
+                String password2 = editTextPassword2.getText().toString();
 
-                registerUser();
+                if (!password.equals(password2)) {
+                    editTextPassword2.setError("Las contraseñas no coinciden");
+                } else {
+                    Toast.makeText(RegisterActivity.this,"Nombre: "+editTextUsername.getText().toString(), Toast.LENGTH_LONG).show();
+                    registerUser();
+                }
             }
         });
 
