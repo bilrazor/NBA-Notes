@@ -35,10 +35,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Stack;
 
-// Esta clase representa una actividad en una aplicación de Android para la creación de notas.
+// Esta clase representa una actividad en una aplicación de Android para la creación y edición de notas.
 public class NotesActivity extends AppCompatActivity {
 
-    // Variables para almacenar el contexto de la aplicación, y los campos de texto para el título y contenido de la nota.
+    // Variables de instancia para almacenar el contexto, campos de texto para el título, contenido y fecha de la nota,
+    // así como botones de la interfaz de usuario y otros estados relevantes.
     private Context context = this;
     private EditText noteTitle;
     private EditText noteContent;
@@ -46,32 +47,30 @@ public class NotesActivity extends AppCompatActivity {
 
     private ImageButton buttonCheck;
     private ImageButton buttonDelete;
-
+    private ImageButton buttonUndo;
+    private ImageButton buttonRedo;
+    private ImageButton buttonBack;
     private boolean noteFavorite = false;
     private boolean isTextSizeIncreased = false;
-    private Stack<String> undoStack = new Stack<>();
-    private Stack<String> redoStack = new Stack<>();
-
     private UndoRedoHelper undoRedoHelper = new UndoRedoHelper();
     private boolean isLoadingData = false;
     private int noteId = -1;
-
-    // Método que se llama cuando se crea la actividad.
+    // Este método se llama cuando se crea la actividad.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Establece el layout de la actividad.
+        // Establece el diseño de la actividad desde un archivo de recursos XML.
         setContentView(R.layout.activity_notes);
 
-        // Encuentra los botones y campos de texto en el layout y los asigna a las variables.
-        ImageButton buttonBack = findViewById(R.id.buttonBack);
-        ImageButton buttonUndo = findViewById(R.id.buttonUndo);
-        ImageButton buttonRedo = findViewById(R.id.buttonRedo);
+        // Inicializa los botones y campos de texto utilizando findViewById y establece algunos estados iniciales.
+        // Los botones incluyen funciones como deshacer, rehacer, guardar, eliminar, etc.
+        buttonBack = findViewById(R.id.buttonBack);
+        buttonUndo = findViewById(R.id.buttonUndo);
+        buttonRedo = findViewById(R.id.buttonRedo);
         buttonCheck = findViewById(R.id.buttonCheck);
         ImageButton buttonNoteLetter = findViewById(R.id.buttonLetter);
         buttonDelete = findViewById(R.id.buttonDelete);
-        ImageButton buttonFavorite = findViewById(R.id.buttonFavorite); // Asegúrate de tener este botón en tu layout
-
+        ImageButton buttonFavorite = findViewById(R.id.buttonFavorite);
         noteTitle = findViewById(R.id.noteTitle);
         noteDate = findViewById(R.id.noteDate);
         noteContent = findViewById(R.id.noteContent);
@@ -79,6 +78,7 @@ public class NotesActivity extends AppCompatActivity {
         buttonRedo.setEnabled(false);
         buttonCheck.setEnabled(false);
         Intent intent = getIntent();
+        // Si el ID de la nota es -1, significa que es una nueva nota, de lo contrario, es una nota existente que se va a editar.
         this.noteId = intent.getIntExtra("NOTE_ID", -1);
 
         // Deshabilitar el botón de eliminar si estamos creando una nueva nota
@@ -88,7 +88,6 @@ public class NotesActivity extends AppCompatActivity {
         buttonRedo.setAlpha(0.4f);
         buttonCheck.setAlpha(0.4f);
         // Llama al método para obtener una nota específica.
-
         if (noteId == -1) {
             noteTitle.setText("");
             noteContent.setText("");
@@ -99,7 +98,6 @@ public class NotesActivity extends AppCompatActivity {
             obtainNote(noteId);  // Carga los detalles de la nota para editar
         }
 
-        // Establece los listeners para los botones. Cuando se hace clic, se ejecutan las acciones correspondientes.
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,11 +116,11 @@ public class NotesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isTextSizeIncreased) {
                     // Aumenta el tamaño del texto
-                    increaseTextSize();
+                    UiUtils.increaseTextSize(noteContent, noteTitle);
                     buttonNoteLetter.setImageResource(R.drawable.baseline_type_specimen_24); // Cambia al ícono Aa
                 } else {
                     // Restablece el tamaño del texto
-                    resetTextSize();
+                    UiUtils.resetTextSize(noteContent, noteTitle);
                     buttonNoteLetter.setImageResource(R.drawable.baseline_spellcheck_24); // Cambia al ícono aA
                 }
                 isTextSizeIncreased = !isTextSizeIncreased;
@@ -158,8 +156,7 @@ public class NotesActivity extends AppCompatActivity {
                     previousText = newTitle;
                 }
                 updateUndoRedoButtonState();
-                buttonCheck.setEnabled(true);
-                buttonCheck.setAlpha(1.0f);
+                activeCheck();
             }
 
         });
@@ -192,8 +189,7 @@ public class NotesActivity extends AppCompatActivity {
                     previousText = newContent;
                 }
                 updateUndoRedoButtonState();
-                buttonCheck.setEnabled(true);
-                buttonCheck.setAlpha(1.0f);
+                activeCheck();
             }
 
         });
@@ -275,7 +271,6 @@ public class NotesActivity extends AppCompatActivity {
 
     }
     private void checkIfTextFieldsAreEmpty() {
-        ImageButton buttonCheck = findViewById(R.id.buttonCheck);
 
         String title = noteTitle.getText().toString();
         String content = noteContent.getText().toString();
@@ -305,7 +300,6 @@ public class NotesActivity extends AppCompatActivity {
                             String title = response.getString("title");
                             String dateString = response.getString("lastModified");
                             String content = response.getString("content");
-                            boolean favorite = response.getBoolean("favorite");
 
                             noteFavorite = response.getBoolean("favorite");
                             buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
@@ -317,7 +311,7 @@ public class NotesActivity extends AppCompatActivity {
                             SimpleDateFormat friendlyFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                             String formattedDate = friendlyFormat.format(date);
 
-                            noteTitle.setText(title.isEmpty() ? "" : title);
+                            noteTitle.setText(title);
                             noteDate.setText(formattedDate);
                             noteContent.setText(content);
                             noteTitle.setSelection(title.length());
@@ -380,10 +374,10 @@ public class NotesActivity extends AppCompatActivity {
                             int newNoteId = response.getInt("id"); // Asegúrate de que "id" sea la clave correcta
                             noteId = newNoteId; // Actualiza el noteId con el ID de la nueva nota
 
-                            hideKeyboard();
-                            resetFocus();
-                            buttonDelete.setEnabled(true);
-                            buttonDelete.setAlpha(1.0f); // Restaurar la opacidad para mostrarlo como habilitado
+                            UiUtils.hideKeyboard(NotesActivity.this);
+                            UiUtils.resetFocus(noteTitle, noteContent);
+
+                            activeDelete();
                             resetCheck();
 
                         } catch (JSONException e) {
@@ -407,19 +401,15 @@ public class NotesActivity extends AppCompatActivity {
 
     // Método para eliminar una nota en el servidor mediante una petición DELETE.
     public void deleteNote(int noteId) {
-        String url = Server.name + "/api/auth/notes/" + noteId;
-        ImageButton buttonDelete = findViewById(R.id.buttonDelete);
         StringRequestWithAuthHeader request = new StringRequestWithAuthHeader(
                 Request.Method.DELETE,
-                url,
+                Server.name + "/api/auth/notes/" + noteId,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Toast.makeText(context, "Nota eliminada con éxito", Toast.LENGTH_SHORT).show();
                         // Aquí puedes añadir cualquier lógica adicional necesaria tras la eliminación exitosa.
-                        buttonDelete.setEnabled(false);
-                        buttonDelete.setAlpha(0.4f); // Cambiar la opacidad para mostrarlo como deshabilitado
-
+                        resetDelete();
                     }
                 },
                 new Response.ErrorListener() {
@@ -436,7 +426,6 @@ public class NotesActivity extends AppCompatActivity {
         queue.add(request);
     }
     public void updateNote(int noteId) {
-        ImageButton buttonCheck = findViewById(R.id.buttonCheck);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -458,8 +447,8 @@ public class NotesActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         // Muestra un mensaje de éxito y maneja la respuesta, posiblemente actualizando la UI.
                         Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
-                        hideKeyboard();
-                        resetFocus();
+                        UiUtils.hideKeyboard(NotesActivity.this);
+                        UiUtils.resetFocus(noteTitle, noteContent);
                         resetCheck();
                     }
                 },
@@ -479,19 +468,8 @@ public class NotesActivity extends AppCompatActivity {
     }
 
 
-    private void increaseTextSize() {
-        noteContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteContent.getTextSize() + 5);
-        noteTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteTitle.getTextSize() + 5);
-    }
 
-    private void resetTextSize() {
-        noteContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteContent.getTextSize() - 5);
-        noteTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, noteTitle.getTextSize() - 5);
-    }
     private void updateUndoRedoButtonState() {
-        ImageButton buttonUndo = findViewById(R.id.buttonUndo);
-        ImageButton buttonRedo = findViewById(R.id.buttonRedo);
-
         boolean isUndoAvailable = !undoRedoHelper.isUndoStackEmpty();
         boolean isRedoAvailable = !undoRedoHelper.isRedoStackEmpty();
 
@@ -502,24 +480,17 @@ public class NotesActivity extends AppCompatActivity {
         buttonUndo.setAlpha(isUndoAvailable ? 1.0f : 0.4f); // 1.0 para activo, 0.4 para deshabilitado
         buttonRedo.setAlpha(isRedoAvailable ? 1.0f : 0.4f);
     }
-    private void hideKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-    private void resetFocus() {
-        noteTitle.clearFocus();
-        noteContent.clearFocus();
-
-    }
     private void resetCheck(){
         buttonCheck.setEnabled(false);
         buttonCheck.setAlpha(0.4f);
     }
     private void resetDelete(){
-
+        buttonDelete.setEnabled(false);
+        buttonDelete.setAlpha(0.4f);
+    }
+    private void activeCheck(){
+        buttonCheck.setEnabled(true);
+        buttonCheck.setAlpha(1.0f);
     }
     private void activeDelete(){
         buttonDelete.setEnabled(true);
