@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -25,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MaterialToolbar toolbar;
     private DrawerLayout drawerLayout;
     private FragmentContainerView fragmentContainer;
-    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,5 +85,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawers();
 
         return false;
+    }
+
+    private void retrieveUserInfo(){
+        SharedPreferences prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
     }
 }

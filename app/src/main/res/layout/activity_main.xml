@@ -32,13 +32,6 @@
                     android:textSize="22sp"
                     android:layout_marginTop="16dp"/>
 
-                <SearchView
-                    android:id="@+id/search_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="36dp"
-                    android:layout_marginTop="8dp"/>
-
                 <ImageButton
                     android:id="@+id/theme_swap_button"
                     android:layout_width="wrap_content"
@@ -53,7 +46,7 @@
                     android:layout_height="24dp"
                     android:background="@drawable/baseline_logout_24"
                     android:layout_marginTop="18dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="15dp"
                     android:minHeight="24dp"
                     android:minWidth="24dp"
                     android:scaleType="fitXY"/>
@@ -65,8 +58,7 @@
         <androidx.drawerlayout.widget.DrawerLayout
             android:id="@+id/main_drawer_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginRight="-65dp">
+            android:layout_height="match_parent">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/main_fragment_container"
@@ -79,7 +71,8 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:fitsSystemWindows="true"
-                app:menu="@menu/main_navigation_drawer"/>
+                app:menu="@menu/main_navigation_drawer"
+                android:layout_marginRight="-65dp"/>
 
         </androidx.drawerlayout.widget.DrawerLayout>
     </LinearLayout>
