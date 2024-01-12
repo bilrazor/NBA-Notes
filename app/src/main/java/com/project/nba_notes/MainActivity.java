@@ -26,11 +26,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MaterialToolbar toolbar;
     private DrawerLayout drawerLayout;
     private FragmentContainerView fragmentContainer;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        searchView = findViewById(R.id.search_view);
+        searchView.setSubmitButtonEnabled(true);
 
         toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
