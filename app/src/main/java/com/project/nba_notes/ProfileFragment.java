@@ -42,44 +42,5 @@ public class ProfileFragment extends Fragment {
 
         text = "EMAIL: " + email;
         emailTextView.setText(text);
-
-        deleteAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-    }
-
-    private void sendDeleteAccountRequest(String username, String email, String password){
-        JSONObject requestBody = new JSONObject();
-        String loginUsername = username;
-        String loginEmail = email;
-
-        try{
-            requestBody.put("username", loginUsername);
-            requestBody.put("email", loginEmail);
-        }catch (JSONException e){
-            throw new RuntimeException(e);
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.DELETE,
-                "/",
-                requestBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        );
-
     }
 }
