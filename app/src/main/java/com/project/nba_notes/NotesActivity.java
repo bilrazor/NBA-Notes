@@ -510,6 +510,7 @@ public class NotesActivity extends AppCompatActivity {
             noteFavorite = !noteFavorite;
             // Actualiza el icono del botón de favorito
             buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
+            configureButtonState(buttonCheck,true);
         });
         buttonNoteLetter.setOnClickListener(v -> {
             if (!isTextSizeIncreased) {
