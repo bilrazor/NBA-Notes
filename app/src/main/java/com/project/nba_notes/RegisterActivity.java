@@ -3,6 +3,7 @@ package com.project.nba_notes;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
@@ -152,6 +153,8 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Toast.makeText(RegisterActivity.this,"Registro correcto", Toast.LENGTH_LONG).show();
                         finish();
+                        Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
+                        startActivity(intent);
                     }
                 },
                 new Response.ErrorListener() {
