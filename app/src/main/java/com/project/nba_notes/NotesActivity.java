@@ -264,6 +264,8 @@ public class NotesActivity extends AppCompatActivity {
 
     // Método para crear una nueva nota en el servidor mediante una petición POST.
     public void createNote() {
+        showLoadingPanel();
+        UiUtils.hideKeyboard(NotesActivity.this);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -283,6 +285,7 @@ public class NotesActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+
                         // Muestra un mensaje de éxito.
                         Toast.makeText(context, "Nota creada", Toast.LENGTH_SHORT).show();
                         try {
@@ -290,12 +293,12 @@ public class NotesActivity extends AppCompatActivity {
                             int newNoteId = response.getInt("id");
                             noteId = newNoteId; // Actualiza el noteId con el ID de la nueva nota
 
-                            UiUtils.hideKeyboard(NotesActivity.this);
+
                             UiUtils.resetFocus(noteTitle, noteContent);
                             configureButtonState(buttonDelete,true);
                             configureButtonState(buttonCheck,false);
 
-
+                            hideLoadingPanel();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -316,19 +319,23 @@ public class NotesActivity extends AppCompatActivity {
 
     // Método para eliminar una nota en el servidor mediante una petición DELETE.
     public void deleteNote(int noteId) {
+        showLoadingPanel();
         StringRequestWithAuthHeader request = new StringRequestWithAuthHeader(
                 Request.Method.DELETE,
                 Server.name + "/api/auth/notes/" + noteId,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        hideLoadingPanel();
                         Toast.makeText(context, "Nota eliminada con éxito", Toast.LENGTH_SHORT).show();
                         configureButtonState(buttonDelete,false);
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        hideLoadingPanel();
                         Toast.makeText(context, "Error al eliminar la nota: " + error.toString(), Toast.LENGTH_LONG).show();
                     }
                 },
@@ -340,6 +347,8 @@ public class NotesActivity extends AppCompatActivity {
     }
     // Método para actualizar una nota en el servidor mediante una petición DELETE.
     public void updateNote(int noteId) {
+        showLoadingPanel();
+        UiUtils.hideKeyboard(NotesActivity.this);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -361,9 +370,9 @@ public class NotesActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         // Muestra un mensaje de éxito y maneja la respuesta, posiblemente actualizando la UI.
                         Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
-                        UiUtils.hideKeyboard(NotesActivity.this);
                         UiUtils.resetFocus(noteTitle, noteContent);
                         configureButtonState(buttonCheck,false);
+                        hideLoadingPanel();
                     }
                 },
                 new Response.ErrorListener() {
