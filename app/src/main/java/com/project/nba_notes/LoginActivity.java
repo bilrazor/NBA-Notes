@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,16 +42,26 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        noAccountButton=findViewById(R.id.button_sinCuenta);
-        logInButton=findViewById(R.id.button_iniciarSesion);
-        editTextUsername=findViewById(R.id.edit_text4);
-        editTextPassword=findViewById(R.id.edit_text3);
+        noAccountButton=findViewById(R.id.no_account_button);
+        logInButton=findViewById(R.id.login_button);
+        editTextUsername=findViewById(R.id.user_text);
+        editTextPassword=findViewById(R.id.password_text);
         showPassword=findViewById(R.id.show_password_button);
+
+        Drawable drawable1 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.user_icon);
+        Bitmap bitmap1 = ((BitmapDrawable) drawable1).getBitmap();
+        Drawable newdrawable1 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap1, 20, 20, true));
+        editTextUsername.setCompoundDrawablesWithIntrinsicBounds(null, null, newdrawable1, null);
+
+        Drawable drawable2 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.password_icon);
+        Bitmap bitmap2 = ((BitmapDrawable) drawable2).getBitmap();
+        Drawable newdrawable2 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap2, 20, 25, true));
+        editTextPassword.setCompoundDrawablesWithIntrinsicBounds(null, null, newdrawable2, null);
         queue = Volley.newRequestQueue(this);
         noAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -113,10 +127,10 @@ public class LoginActivity extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
                         Toast.makeText(context,"Token: " + receivedToken, Toast.LENGTH_SHORT).show();
-                        SharedPreferences preferences = context.getSharedPreferences("SESSIONS_APP_PREFS", MODE_PRIVATE);
+                        SharedPreferences preferences = context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("VALID_USERNAME",editTextUsername.getText().toString());
-                        editor.putString("VALID_TOKEN", receivedToken);
+                        editor.putString("username",editTextUsername.getText().toString());
+                        editor.putString("token", receivedToken);
                         editor.commit();
                         finish();
                         Intent intent=new Intent(getApplicationContext(),MainActivity.class);
