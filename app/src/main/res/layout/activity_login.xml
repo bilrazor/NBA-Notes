@@ -48,7 +48,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="Inicio de sesión"/>
+        android:text="¿No tienes cuenta?"/>
 
     <Button
         android:id="@+id/no_account_button"
@@ -57,7 +57,7 @@
         app:layout_constraintBottom_toTopOf="@id/login_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="¿No tienes cuenta?"
+        android:text="Iniciar sesión"
         />
 
     <ImageButton
