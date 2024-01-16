@@ -59,7 +59,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         showPassword1.setOnClickListener(new View.OnClickListener() {
             boolean isImagenCambiada = false;
-            final Typeface originalTypeface = editTextPassword.getTypeface();
             @Override
             public void onClick(View v) {
                 if (!isImagenCambiada) {
@@ -93,7 +92,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         showPassword2.setOnClickListener(new View.OnClickListener() {
             boolean isImagenCambiada = false;
-            final Typeface originalTypeface = editTextPassword2.getTypeface();
             @Override
             public void onClick(View v) {
                 if (!isImagenCambiada) {
