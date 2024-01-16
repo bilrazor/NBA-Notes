@@ -2,10 +2,14 @@ package com.project.nba_notes;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,6 +24,8 @@ import org.json.JSONObject;
 
 public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
+    private ImageButton showPassword1;
+    private ImageButton showPassword2;
     private EditText editTextUsername;
     private EditText editTextPassword;
     private EditText editTextPassword2;
@@ -33,7 +39,8 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.edit_text_password);
         editTextPassword2 = findViewById(R.id.edit_text_password_confirm);
         registerButton = findViewById(R.id.button_create_account);
-
+        showPassword1 = findViewById(R.id.show_password_button1);
+        showPassword2 = findViewById(R.id.show_password_button2);
         queue = Volley.newRequestQueue(this);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +56,74 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+
+        showPassword1.setOnClickListener(new View.OnClickListener() {
+            boolean isImagenCambiada = false;
+            final Typeface originalTypeface = editTextPassword.getTypeface();
+            @Override
+            public void onClick(View v) {
+                if (!isImagenCambiada) {
+                    // Cambia la imagen
+                    showPassword1.setImageResource(R.drawable.ojo_cerrado);
+
+                    Typeface tempTypeface = editTextPassword.getTypeface();
+
+                    // Cambia el EditText de contraseña a texto normal
+                    editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                    // Restaura el tipo de fuente original
+                    editTextPassword.setTypeface(tempTypeface);
+                } else {
+                    // Cambia la imagen de nuevo a la original
+                    showPassword1.setImageResource(R.drawable.ojo_abierto);
+
+                    Typeface tempTypeface = editTextPassword.getTypeface();
+
+                    // Cambia el EditText de texto normal a contraseña
+                    editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                    editTextPassword.setTypeface(tempTypeface);
+                }
+
+                // Cambia el estado de la imagen
+                isImagenCambiada = !isImagenCambiada;
+            }
+        });
+
+
+        showPassword2.setOnClickListener(new View.OnClickListener() {
+            boolean isImagenCambiada = false;
+            final Typeface originalTypeface = editTextPassword2.getTypeface();
+            @Override
+            public void onClick(View v) {
+                if (!isImagenCambiada) {
+                    // Cambia la imagen
+                    showPassword2.setImageResource(R.drawable.ojo_cerrado);
+
+                    Typeface tempTypeface = editTextPassword2.getTypeface();
+
+                    // Cambia el EditText de contraseña a texto normal
+                    editTextPassword2.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                    // Restaura el tipo de fuente original
+                    editTextPassword2.setTypeface(tempTypeface);
+                } else {
+                    // Cambia la imagen de nuevo a la original
+                    showPassword2.setImageResource(R.drawable.ojo_abierto);
+
+                    Typeface tempTypeface = editTextPassword2.getTypeface();
+
+                    // Cambia el EditText de texto normal a contraseña
+                    editTextPassword2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                    editTextPassword2.setTypeface(tempTypeface);
+                }
+
+                // Cambia el estado de la imagen
+                isImagenCambiada = !isImagenCambiada;
+            }
+        });
+
 
     }
     private void registerUser(){

@@ -8,6 +8,7 @@
 
     <EditText
         android:id="@+id/edit_text_username"
+        android:layout_marginTop="20dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Usuario"
@@ -43,7 +44,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:inputType="textPassword"
-        android:hint="Confirmar contraseña"/>
+        android:hint="Confirmar contraseña"
+        android:layout_marginBottom="20dp" />
 
     <Button
         android:id="@+id/button_create_account"
@@ -54,6 +56,29 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/show_password_button1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintStart_toEndOf="@id/edit_text_password"
+        app:layout_constraintTop_toTopOf="@id/edit_text_password"
+        app:layout_constraintBottom_toBottomOf="@id/edit_text_password"
+        android:src="@drawable/ojo_abierto"
+        android:scaleType="centerInside"
+        android:backgroundTintMode="screen"
+        />
+
+    <ImageButton
+        android:id="@+id/show_password_button2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintStart_toEndOf="@id/edit_text_password_confirm"
+        app:layout_constraintTop_toTopOf="@id/edit_text_password_confirm"
+        app:layout_constraintBottom_toBottomOf="@id/edit_text_password_confirm"
+        android:src="@drawable/ojo_abierto"
+        android:scaleType="centerInside"
+        android:backgroundTintMode="screen" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
