@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     Button logInButton;
     EditText editTextUsername;
     EditText editTextPassword;
+    ImageButton showPassword;
     private Context context=this;
     private RequestQueue queue;
     @Override
@@ -38,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         logInButton=findViewById(R.id.button_iniciarSesion);
         editTextUsername=findViewById(R.id.edit_text4);
         editTextPassword=findViewById(R.id.edit_text3);
+        showPassword=findViewById(R.id.show_password_button);
         queue = Volley.newRequestQueue(this);
         noAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +55,38 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sendPostLogin();
+            }
+        });
+
+        showPassword.setOnClickListener(new View.OnClickListener() {
+            boolean isImagenCambiada = false;
+            @Override
+            public void onClick(View v) {
+                if (!isImagenCambiada) {
+                    // Cambia la imagen
+                    showPassword.setImageResource(R.drawable.ojo_cerrado);
+
+                    Typeface tempTypeface = editTextPassword.getTypeface();
+
+                    // Cambia el EditText de contraseña a texto normal
+                    editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT);
+
+                    // Restaura el tipo de fuente original
+                    editTextPassword.setTypeface(tempTypeface);
+                } else {
+                    // Cambia la imagen de nuevo a la original
+                    showPassword.setImageResource(R.drawable.ojo_abierto);
+
+                    Typeface tempTypeface = editTextPassword.getTypeface();
+
+                    // Cambia el EditText de texto normal a contraseña
+                    editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                    editTextPassword.setTypeface(tempTypeface);
+                }
+
+                // Cambia el estado de la imagen
+                isImagenCambiada = !isImagenCambiada;
             }
         });
     }
