@@ -29,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText editTextUsername;
     private EditText editTextPassword;
     private EditText editTextPassword2;
+    private EditText editTextEmail;
     private RequestQueue queue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,21 +42,26 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.button_create_account);
         showPassword1 = findViewById(R.id.show_password_button1);
         showPassword2 = findViewById(R.id.show_password_button2);
+        editTextEmail = findViewById(R.id.edit_text_email);
         queue = Volley.newRequestQueue(this);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String password = editTextPassword.getText().toString();
                 String password2 = editTextPassword2.getText().toString();
-
+                CharSequence email = editTextEmail.getText().toString();
                 if (!password.equals(password2)) {
                     editTextPassword2.setError("Las contraseñas no coinciden");
+                }if (!esEmailValido(email)) {
+                    editTextEmail.setError("Introduce un email válido");
                 } else {
-                    Toast.makeText(RegisterActivity.this,"Nombre: "+editTextUsername.getText().toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this,"Registro correcto", Toast.LENGTH_LONG).show();
                     registerUser();
                 }
+
             }
         });
+
 
         showPassword1.setOnClickListener(new View.OnClickListener() {
             boolean isImagenCambiada = false;
@@ -124,11 +130,16 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     }
+    boolean esEmailValido(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
     private void registerUser(){
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("username", editTextUsername.getText().toString());
             requestBody.put("password", editTextPassword.getText().toString());
+            requestBody.put("email", editTextEmail.getText().toString());
+
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
