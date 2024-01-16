@@ -21,12 +21,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainFragment extends Fragment {
     private String category;  // Variable para almacenar la categoría actual
     private RecyclerView recyclerView;  // Variable para referenciar el RecyclerView en la UI
-
+    private List<NotesData> allTheNotes;
+    private NotesRecyclerViewAdapter adapter;
+    private RequestQueue queue;
+    private View rootView;
+    private TextView textViewTitle;
+    private ImageButton buttonCreateNote;
     public MainFragment() {
         // Constructor público vacío requerido por Android para instanciar el fragmento
     }
@@ -34,41 +40,17 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Infla el layout XML asociado con este fragmento
-        View rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        System.out.println("Estamos dentro de MainFragment"); // Mensaje de depuración
-        TextView textViewTitle = rootView.findViewById(R.id.textViewTitle);
-
+        rootView = inflater.inflate(R.layout.main_fragment, container, false);
+        initUI();
+        handleFragmentArguments();
+        // Configuración del botón para crear notas
+        setupCreateNoteButton();
         // Verifica si el fragmento está asociado a una actividad
         if (getActivity() != null) {
-            // Recupera argumentos pasados al fragmento, si existen
-            if (getArguments() != null) {
-                category = getArguments().getString("CATEGORY", "todas");
-
-                if (category.equals("favoritos")) {
-                    textViewTitle.setText("Favoritos");
-                    textViewTitle.setVisibility(View.VISIBLE); // Hacer visible el título para favoritos
-                } else {
-                    textViewTitle.setVisibility(View.GONE); // Ocultar el título para otras categorías
-                }
-            }
-
-
             // Configuración del RecyclerView
-            recyclerView = rootView.findViewById(R.id.recycler_view);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-            // Configuración del botón para crear notas
-            ImageButton buttonCreateNote = rootView.findViewById(R.id.buttonCreateNote);
-            buttonCreateNote.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Inicia una nueva actividad al hacer clic en el botón
-                    Intent intent = new Intent(getActivity(), NotesActivity.class);
-                    startActivity(intent);
-                }
-            });
-
             realizarFiltrado(); // Llama al método para filtrar datos basados en la categoría
+            allTheNotes = new ArrayList<>();
+            adapter = new NotesRecyclerViewAdapter(allTheNotes, getActivity());
         }
 
         return rootView; // Devuelve la vista del fragmento
@@ -87,48 +69,80 @@ public class MainFragment extends Fragment {
                 url = ""; // URL por defecto o manejo de categoría desconocida
                 break;
         }
+
         // Solicitud de red para obtener los datos de las notas
         JsonArrayRequestWithAuthHeader request = new JsonArrayRequestWithAuthHeader(
                 Request.Method.GET,
                 url,
                 null,
                 response -> {
-                    List<NotesData> allTheNotes = new ArrayList<>();
+                    allTheNotes.clear();
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject note = response.getJSONObject(i);
                             NotesData data = new NotesData(note);
                             allTheNotes.add(data);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
-                    // Establece el adaptador y el layout manager para el RecyclerView
-                    if (getActivity() != null) {
-                        NotesRecyclerViewAdapter adapter = new NotesRecyclerViewAdapter(allTheNotes, getActivity());
-                        recyclerView.setAdapter(adapter);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    }
+                    sortNotes(false);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    recyclerView.setAdapter(adapter);
                 },
                 error -> {
-                    // Verifica si el contexto de la actividad está disponible
-                    if (getActivity() != null) {
                         // Muestra un mensaje más detallado
                         String mensajeError = error.getMessage() == null ? "Error desconocido" : error.getMessage();
                         Toast.makeText(getActivity(), "Error al cargar datos: " + mensajeError,Toast.LENGTH_LONG).show();
-
-                    }
                 },getActivity()
         );
+
         // Verifica si el contexto de la actividad está disponible
         if (getActivity() != null) {
             // Crea una cola de solicitudes y añade la solicitud de red a ella
-            RequestQueue queue = Volley.newRequestQueue(getActivity());
             queue.add(request);
         }
 
 
     }
+    public void sortNotes(boolean isAscending) {
+        if (isAscending) {
+            // Ordenar ascendente
+            allTheNotes.sort((note1, note2) -> note1.getLastModified().compareTo(note2.getLastModified()));
+        } else {
+            // Ordenar descendente
+            allTheNotes.sort((note1, note2) -> note2.getLastModified().compareTo(note1.getLastModified()));
+        }
+        adapter.notifyDataSetChanged(); // Notifica al adaptador del cambio
+    }
+    private void initUI() {
+        // Encuentra y almacena referencias a los componentes de la interfaz de usuario en variables.
+        textViewTitle = rootView.findViewById(R.id.textViewTitle);
+        recyclerView = rootView.findViewById(R.id.recycler_view);
+        buttonCreateNote = rootView.findViewById(R.id.buttonCreateNote);
+        // Configura la cola de solicitudes HTTP.
+        queue = Volley.newRequestQueue(getActivity());
 
+    }
+
+    // Recupera argumentos pasados al fragmento, si existen
+    private void handleFragmentArguments() {
+        if (getArguments() != null) {
+            category = getArguments().getString("CATEGORY", "todas");
+            if (category.equals("favoritos")) {
+                textViewTitle.setText("Favoritos");
+                textViewTitle.setVisibility(View.VISIBLE); // Hacer visible el título para favoritos
+            } else {
+                textViewTitle.setVisibility(View.GONE); // Ocultar el título para otras categorías
+            }
+        }
+    }
+    private void setupCreateNoteButton() {
+        buttonCreateNote.setOnClickListener(view -> {
+            Intent intent = new Intent(getActivity(), NotesActivity.class);
+            startActivity(intent);
+        });
+    }
 }
 

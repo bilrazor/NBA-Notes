@@ -90,7 +90,7 @@ public class NotesViewHolder extends RecyclerView.ViewHolder {
         }
 
         // Crea y configura la solicitud de red.
-        JsonObjectRequest2WithAuthHeader jsonObjectRequest = new JsonObjectRequest2WithAuthHeader(
+        JsonObjectRequestWithAuthHeader jsonObjectRequest = new JsonObjectRequestWithAuthHeader(
                 Request.Method.PUT,
                 url,
                 postData,
