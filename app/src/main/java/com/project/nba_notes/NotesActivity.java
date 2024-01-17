@@ -2,19 +2,12 @@ package com.project.nba_notes;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -35,7 +27,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Stack;
 
 // Esta clase representa una actividad en una aplicación de Android para la creación y edición de notas.
 public class NotesActivity extends AppCompatActivity {
@@ -60,7 +51,8 @@ public class NotesActivity extends AppCompatActivity {
     private int noteId = -1;
     private RequestQueue queue;
     private RelativeLayout loadingPanel;
-
+    private boolean isUndoAvailable;
+    private boolean isRedoAvailable;
     // Este método se llama cuando se crea la actividad.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -200,8 +192,6 @@ public class NotesActivity extends AppCompatActivity {
     public void obtainNote(int noteId) {
         // Muestra el panel de carga.
         showLoadingPanel();
-        // Indica que la actividad está cargando datos.
-        isLoadingData = true;
         // Crea y configura la petición HTTP GET.
         JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
                 Request.Method.GET,
@@ -220,22 +210,15 @@ public class NotesActivity extends AppCompatActivity {
                             noteFavorite = response.getBoolean("favorite");
 
                             buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
-                            // Convertir la cadena de fecha a un objeto Date
-                            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                            Date date = isoFormat.parse(dateString);
-
-                            // Formatear la fecha a un formato más amigable
-                            SimpleDateFormat friendlyFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                            String formattedDate = friendlyFormat.format(date);
 
                             noteTitle.setText(title);
-                            noteDate.setText(formattedDate);
+                            noteDate.setText(parseDate(dateString));
                             noteContent.setText(content);
                             noteTitle.setSelection(title.length());
                             noteContent.setSelection(content.length());
                             String currentTitle = noteTitle.getText().toString();
                             String currentContent = noteContent.getText().toString();
-                            isLoadingData = false;
+
 
                             // Actualiza el estado inicial del helper de deshacer/rehacer con los datos cargados.
                             undoRedoHelper.setInitialState(currentTitle, currentContent, title.length(), content.length());
@@ -266,6 +249,7 @@ public class NotesActivity extends AppCompatActivity {
     public void createNote() {
         showLoadingPanel();
         UiUtils.hideKeyboard(NotesActivity.this);
+        UiUtils.resetFocus(noteTitle, noteContent);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -285,6 +269,17 @@ public class NotesActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        isLoadingData = false;
+                        hideLoadingPanel();
+                        noteDate.setVisibility(View.VISIBLE);
+                        try {
+                            String dateString = response.getString("lastModified");
+                            noteDate.setText(parseDate(dateString));
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
 
                         // Muestra un mensaje de éxito.
                         Toast.makeText(context, "Nota creada", Toast.LENGTH_SHORT).show();
@@ -294,11 +289,8 @@ public class NotesActivity extends AppCompatActivity {
                             noteId = newNoteId; // Actualiza el noteId con el ID de la nueva nota
 
 
-                            UiUtils.resetFocus(noteTitle, noteContent);
-                            configureButtonState(buttonDelete,true);
-                            configureButtonState(buttonCheck,false);
+                             configureButtonState(buttonDelete,true);
 
-                            hideLoadingPanel();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -309,6 +301,9 @@ public class NotesActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // Manejo de errores de la petición.
+                        hideLoadingPanel();
+                        Toast.makeText(context, "Error en la creación de la nota", Toast.LENGTH_SHORT).show();
+
                     }
                 },
                 this
@@ -329,19 +324,17 @@ public class NotesActivity extends AppCompatActivity {
                         hideLoadingPanel();
                         Toast.makeText(context, "Nota eliminada con éxito", Toast.LENGTH_SHORT).show();
                         configureButtonState(buttonDelete,false);
-
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        hideLoadingPanel();
                         Toast.makeText(context, "Error al eliminar la nota: " + error.toString(), Toast.LENGTH_LONG).show();
+                        hideLoadingPanel();
                     }
                 },
                 this
         );
-
         // Añade la petición a la cola y la ejecuta.
         queue.add(request);
     }
@@ -349,6 +342,7 @@ public class NotesActivity extends AppCompatActivity {
     public void updateNote(int noteId) {
         showLoadingPanel();
         UiUtils.hideKeyboard(NotesActivity.this);
+        UiUtils.resetFocus(noteTitle, noteContent);
         // Crea el cuerpo de la petición con el título y contenido de los campos de texto.
         JSONObject requestBody = new JSONObject();
         try {
@@ -370,8 +364,14 @@ public class NotesActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         // Muestra un mensaje de éxito y maneja la respuesta, posiblemente actualizando la UI.
                         Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
-                        UiUtils.resetFocus(noteTitle, noteContent);
-                        configureButtonState(buttonCheck,false);
+                        try {
+                            String dateString = response.getString("lastModified");
+                            noteDate.setText(parseDate(dateString));
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
                         hideLoadingPanel();
                     }
                 },
@@ -380,11 +380,11 @@ public class NotesActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // Manejo de errores de la petición.
                         Toast.makeText(context, "Error al actualizar la nota: " + error.toString(), Toast.LENGTH_LONG).show();
+                        hideLoadingPanel();
                     }
                 },
                 this
         );
-
         // Añade la petición a la cola y la ejecuta.
         queue.add(request);
     }
@@ -393,7 +393,6 @@ public class NotesActivity extends AppCompatActivity {
         String title = noteTitle.getText().toString();
         String content = noteContent.getText().toString();
         boolean isAnyFieldNotEmpty = !title.isEmpty() || !content.isEmpty();
-
         // Si alguno de los campos no está vacío, habilita el botón para guardar/check.
         // Si ambos campos están vacíos, deshabilita el botón.
         configureButtonState(buttonCheck, isAnyFieldNotEmpty);
@@ -403,9 +402,9 @@ public class NotesActivity extends AppCompatActivity {
     // Actualiza el estado de los botones Undo y Redo basado en si hay acciones para deshacer o rehacer.
     private void updateUndoRedoButtonState() {
         // Verifica si hay acciones para deshacer.
-        boolean isUndoAvailable = !undoRedoHelper.isUndoStackEmpty();
+        isUndoAvailable = !undoRedoHelper.isUndoStackEmpty();
         // Verifica si hay acciones para rehacer.
-        boolean isRedoAvailable = !undoRedoHelper.isRedoStackEmpty();
+        isRedoAvailable = !undoRedoHelper.isRedoStackEmpty();
 
         // Habilita o deshabilita los botones dependiendo de si las acciones están disponibles.
         configureButtonState(buttonUndo, isUndoAvailable);
@@ -424,13 +423,15 @@ public class NotesActivity extends AppCompatActivity {
 
     // Evento de retroceso personalizado para manejar cuando el usuario presiona el botón de regreso.
     public void onBack() {
-        // Si los campos de texto no están vacíos, intenta guardar la nota antes de cerrar la actividad.
-        if (!isEmpty(noteTitle) || !isEmpty(noteContent)) {
+        // Si los campos de texto no están vacíos, intenta guardar la nota antes de cerrar la actividad
+        if ((buttonCheck.isEnabled()) && (!isEmpty(noteTitle) || !isEmpty(noteContent))) {
             saveNote();
+        }else if(isEmpty(noteTitle) && isEmpty(noteContent) && !(noteId == -1)){
+            deleteNote(noteId);
         }
-        // Cierra la actividad actual.
         finish();
     }
+
 
     // Verifica si un EditText está vacío (sin texto o solo con espacios en blanco).
     private boolean isEmpty(EditText editText) {
@@ -448,11 +449,20 @@ public class NotesActivity extends AppCompatActivity {
             updateNote(noteId);
         }
     }
+    private String parseDate (String dateString) throws ParseException {
+        // Convertir la cadena de fecha a un objeto Date
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = isoFormat.parse(dateString);
+
+        // Formatear la fecha a un formato más amigable
+        SimpleDateFormat friendlyFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String formattedDate = friendlyFormat.format(date);
+        return formattedDate;
+    }
    // Procesa los datos de intención, como el ID de la nota, para determinar si se está creando una nota nueva o editando una existente.
     private void processIntentData() {
         Intent intent = getIntent();
         this.noteId = intent.getIntExtra("NOTE_ID", -1);
-
         // Si es una nueva nota, limpia los campos de texto y oculta la fecha.
         if (noteId == -1) {
             noteTitle.setText("");
@@ -466,12 +476,36 @@ public class NotesActivity extends AppCompatActivity {
     // Muestra el panel de carga con un spinner para indicar que se está cargando o procesando algo.
     private void showLoadingPanel() {
         loadingPanel.setVisibility(View.VISIBLE);
+        setButtonsEnabled(false);
+        isLoadingData = true;
     }
 
-    // Oculta el panel de carga una vez que se ha completado la carga o el procesamiento.
     private void hideLoadingPanel() {
         loadingPanel.setVisibility(View.GONE);
+        setButtonsEnabled(true);
+        updateUndoRedoButtonState();
+        isLoadingData = false;
     }
+    private void setButtonsEnabled(boolean isEnabled) {
+        buttonCheck.setEnabled(false);
+        buttonDelete.setEnabled(noteId != -1 && isEnabled);
+        buttonUndo.setEnabled(isEnabled);
+        buttonRedo.setEnabled(isEnabled);
+        buttonBack.setEnabled(isEnabled);
+        buttonFavorite.setEnabled(isEnabled);
+        buttonNoteLetter.setEnabled(isEnabled);
+        // Establecer la opacidad para cada botón
+        float alpha = isEnabled ? 1.0f : 0.4f;
+        buttonCheck.setAlpha(0.4f);
+        buttonDelete.setAlpha(alpha);
+        buttonUndo.setAlpha(alpha);
+        buttonRedo.setAlpha(alpha);
+        buttonBack.setAlpha(alpha);
+        buttonFavorite.setAlpha(alpha);
+        buttonNoteLetter.setAlpha(alpha);
+
+    }
+
     // Inicializa los componentes de la interfaz de usuario y configura la cola de solicitudes para las operaciones de red.
     private void initUI() {
         // Encuentra y almacena referencias a los componentes de la interfaz de usuario en variables.
@@ -505,33 +539,37 @@ public class NotesActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(v -> onBack());
         buttonCheck.setOnClickListener(v -> saveNote());
         // Botón para la eliminación de una nota
-        buttonDelete.setOnClickListener(v -> {
-            // Se puede eliminar una nota solo si existe
-            if (noteId != -1) {
-                deleteNote(noteId);
-                finish();// Cierra la actividad
-            } else {
-                Toast.makeText(context, "No hay ninguna nota para eliminar.", Toast.LENGTH_SHORT).show();
-            }
-        });
-        buttonFavorite.setOnClickListener(v -> {
-            // Cambia el estado de favorito
-            noteFavorite = !noteFavorite;
-            // Actualiza el icono del botón de favorito
-            buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
-            configureButtonState(buttonCheck,true);
-        });
-        buttonNoteLetter.setOnClickListener(v -> {
-            if (!isTextSizeIncreased) {
-                // Aumenta el tamaño del texto
-                UiUtils.increaseTextSize(noteContent, noteTitle);
-                buttonNoteLetter.setImageResource(R.drawable.baseline_type_specimen_24); // Cambia al ícono Aa
-            } else {
-                // Restablece el tamaño del texto
-                UiUtils.resetTextSize(noteContent, noteTitle);
-                buttonNoteLetter.setImageResource(R.drawable.baseline_spellcheck_24); // Cambia al ícono aA
-            }
-            isTextSizeIncreased = !isTextSizeIncreased;
-        });
+        buttonDelete.setOnClickListener(v -> setNoteDelete());
+        buttonFavorite.setOnClickListener(v -> changueStateFavorites());
+        buttonNoteLetter.setOnClickListener(v -> textIncresedDecreased());
     };
+    private void setNoteDelete(){
+        // Se puede eliminar una nota solo si existe
+        if (noteId != -1) {
+            deleteNote(noteId);
+            finish();// Cierra la actividad
+        } else {
+            Toast.makeText(context, "No hay ninguna nota para eliminar.", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void changueStateFavorites(){
+        // Cambia el estado de favorito
+        noteFavorite = !noteFavorite;
+        // Actualiza el icono del botón de favorito
+        buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
+        configureButtonState(buttonCheck,true);
+    }
+    private void textIncresedDecreased(){
+        if (!isTextSizeIncreased) {
+            // Aumenta el tamaño del texto
+            UiUtils.increaseTextSize(noteContent, noteTitle);
+            buttonNoteLetter.setImageResource(R.drawable.baseline_text_decrease_24); // Cambia al ícono Aa
+        } else {
+            // Restablece el tamaño del texto
+            UiUtils.resetTextSize(noteContent, noteTitle);
+            buttonNoteLetter.setImageResource(R.drawable.baseline_text_increase_24); // Cambia al ícono aA
+        }
+        isTextSizeIncreased = !isTextSizeIncreased;
+
+    }
 }
