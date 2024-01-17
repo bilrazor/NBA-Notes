@@ -30,6 +30,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+
 public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private Button hasAccountButton;
@@ -139,10 +141,11 @@ public class RegisterActivity extends AppCompatActivity {
                     editTextEmail.setError("Este campo es obligatorio");
                 }if(editTextPassword.getText().toString().isEmpty()){
                     editTextPassword.setError("Este campo es obligatorio");
-                }if(editTextUsername.getText().toString().isEmpty()){
+                }if(editTextUsername.getText().toString().isEmpty()) {
                     editTextPassword2.setError("Este campo es obligatorio");
-                }if (password.equals(password2) && esEmailValido(email)) {
-                    Toast.makeText(RegisterActivity.this,"Registro correcto", Toast.LENGTH_LONG).show();
+                }if (editTextPassword.getText().toString().length()<6){
+                    editTextPassword.setError("La contraseña debe tener un mínimo de 6 carácteres");
+                } else if (password.equals(password2) && esEmailValido(email)) {
                     registerUser();
                 } else {
                     if (!password.equals(password2)) {
@@ -158,7 +161,7 @@ public class RegisterActivity extends AppCompatActivity {
         hasAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -263,8 +266,14 @@ public class RegisterActivity extends AppCompatActivity {
                         if (error.networkResponse == null) {
                             Toast.makeText(RegisterActivity.this,"Error de conexión",Toast.LENGTH_LONG).show();
                         } else {
-                            int serverCode = error.networkResponse.statusCode;
-                            Toast.makeText(RegisterActivity.this,"El servidor respondió con "+serverCode,Toast.LENGTH_LONG).show();
+                            String serverCode = null;
+                            try {
+                                serverCode = new String(error.networkResponse.data,"utf-8");
+
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Toast.makeText(RegisterActivity.this,serverCode,Toast.LENGTH_LONG).show();
                         }
 
                     }
