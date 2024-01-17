@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.menu_item_favourite);
             //transaction.replace(R.id.main_fragment_container, );
         else if (id == R.id.menu_item_order);
-            //transaction.replace(R.id.main_fragment_container, );
+            //MAIN FRAGMENT.SORTED(TRUE)
 
         drawerLayout.closeDrawers();
 
