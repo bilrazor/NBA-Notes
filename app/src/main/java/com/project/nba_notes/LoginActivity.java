@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -50,18 +53,61 @@ public class LoginActivity extends AppCompatActivity {
 
         Drawable drawable1 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.user_icon);
         Bitmap bitmap1 = ((BitmapDrawable) drawable1).getBitmap();
-        Drawable newdrawable1 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap1, 20, 20, true));
-        editTextUsername.setCompoundDrawablesWithIntrinsicBounds(null, null, newdrawable1, null);
+        Drawable newDrawable1 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap1, 20, 20, true));
+
+// Define el color que se va a usar
+        int color1 = Color.parseColor("#FF7800");
+
+// Aplica el filtro de color
+        newDrawable1.setColorFilter(new PorterDuffColorFilter(color1, PorterDuff.Mode.SRC_IN));
+        editTextUsername.setCompoundDrawablesWithIntrinsicBounds(null, null, newDrawable1, null);
+
+
+
 
         Drawable drawable2 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.password_icon);
         Bitmap bitmap2 = ((BitmapDrawable) drawable2).getBitmap();
-        Drawable newdrawable2 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap2, 20, 25, true));
-        editTextPassword.setCompoundDrawablesWithIntrinsicBounds(null, null, newdrawable2, null);
+        Drawable newDrawable2 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap2, 22, 22, true));
+
+// Define el color que se va a usar
+        int color2 = Color.parseColor("#FF7800");
+
+// Aplica el filtro de color
+        newDrawable2.setColorFilter(new PorterDuffColorFilter(color2, PorterDuff.Mode.SRC_IN));
+        editTextPassword.setCompoundDrawablesWithIntrinsicBounds(null, null, newDrawable2, null);
+
+
+
+        Drawable drawable3 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ojo_abierto);
+        Bitmap bitmap3 = ((BitmapDrawable) drawable3).getBitmap();
+        Drawable newDrawable3 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap3, 28, 18, true));
+
+// Define el color que se va a usar
+        int color3 = Color.parseColor("#FF7800");
+
+// Aplica el filtro de color
+        newDrawable3.setColorFilter(new PorterDuffColorFilter(color3, PorterDuff.Mode.SRC_IN));
+
+
+        Drawable drawable4 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ojo_cerrado);
+        Bitmap bitmap4 = ((BitmapDrawable) drawable4).getBitmap();
+        Drawable newDrawable4 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap4, 30, 30, true));
+
+// Define el color que se va a usar
+        int color4 = Color.parseColor("#FF7800");
+
+// Aplica el filtro de color
+        newDrawable4.setColorFilter(new PorterDuffColorFilter(color4, PorterDuff.Mode.SRC_IN));
+
+
+        showPassword.setImageDrawable(newDrawable3);
+
+
         queue = Volley.newRequestQueue(this);
         noAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -78,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isImagenCambiada) {
                     // Cambia la imagen
-                    showPassword.setImageResource(R.drawable.ojo_cerrado);
+                    showPassword.setImageDrawable(newDrawable4);
 
                     Typeface tempTypeface = editTextPassword.getTypeface();
 
@@ -89,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                     editTextPassword.setTypeface(tempTypeface);
                 } else {
                     // Cambia la imagen de nuevo a la original
-                    showPassword.setImageResource(R.drawable.ojo_abierto);
+                    showPassword.setImageDrawable(newDrawable3);
 
                     Typeface tempTypeface = editTextPassword.getTypeface();
 

@@ -2,13 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#0020FF">
 
     <EditText
         android:id="@+id/password_text"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:hint="Contraseña"
+        android:textColorHint="#CCFF7800"
+        android:textColor="#FF7800"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@id/login_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,11 +25,14 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:hint="Usuario"
+        android:textColorHint="#CCFF7800"
+        android:textColor="#FF7800"
         app:layout_constraintTop_toBottomOf="@id/login_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="0.6"
         android:layout_marginTop="30dp"
+
         />
 
     <TextView
@@ -38,7 +44,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textSize="30sp"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:textColor="#FF7800"/>
 
 
     <Button
@@ -50,7 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:text="¿No tienes cuenta?"
         android:background="#00ff"
-        android:textColor="#780050"/>
+        android:textColor="#FF7800"/>
 
     <Button
         android:id="@+id/login_button"
@@ -60,6 +67,8 @@
         app:layout_constraintStart_toStartOf="@id/password_text"
         app:layout_constraintEnd_toEndOf="@id/password_text"
         android:text="Iniciar sesión"
+        android:textColor="#0020FF"
+        android:backgroundTint="#FF7800"
         />
 
     <ImageButton
@@ -69,9 +78,8 @@
         app:layout_constraintStart_toEndOf="@id/password_text"
         app:layout_constraintTop_toTopOf="@id/password_text"
         app:layout_constraintBottom_toBottomOf="@id/password_text"
-        android:src="@drawable/ojo_abierto"
         android:scaleType="centerInside"
-        android:backgroundTintMode="screen"
+        android:background="#00ff"
         />
 
     <androidx.cardview.widget.CardView
