@@ -101,7 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         Drawable drawable4 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ojo_abierto);
         Bitmap bitmap4 = ((BitmapDrawable) drawable4).getBitmap();
-        Drawable newDrawable4 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap4, 29, 17, true));
+        Drawable newDrawable4 = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap4, 28, 18, true));
 
 // Define el color que se va a usar
         int color4 = Color.parseColor("#FF7800");
@@ -126,7 +126,6 @@ public class RegisterActivity extends AppCompatActivity {
         showPassword1.setImageDrawable(newDrawable4);
         showPassword2.setImageDrawable(newDrawable4);
 
-
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,10 +147,10 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        hasAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
             }
         });

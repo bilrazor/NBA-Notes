@@ -10,7 +10,7 @@
 
     <EditText
         android:id="@+id/edit_text_username"
-        android:textColorHint="#FF7800"
+        android:textColorHint="#CCFF7800"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Usuario"
@@ -26,7 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Email"
-        android:textColorHint="#FF7800"
+        android:textColorHint="#CCFF7800"
         android:height="48dp"
         android:textColor="#FF7800"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:hint="Contraseña"
-        android:textColorHint="#FF7800"
+        android:textColorHint="#CCFF7800"
         android:textColor="#FF7800"
         android:height="48dp"
         android:inputType="textPassword"
@@ -61,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:inputType="textPassword"
         android:hint="Confirmar contraseña"
-        android:textColorHint="#FF7800"
+        android:textColorHint="#CCFF7800"
         android:layout_marginBottom="20dp" />
 
     <TextView
