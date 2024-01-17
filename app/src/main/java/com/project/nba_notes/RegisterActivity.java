@@ -133,7 +133,15 @@ public class RegisterActivity extends AppCompatActivity {
                 String password2 = editTextPassword2.getText().toString();
                 CharSequence email = editTextEmail.getText().toString();
 
-                if (password.equals(password2) && esEmailValido(email)) {
+                if(editTextUsername.getText().toString().isEmpty()){
+                    editTextUsername.setError("Este campo es obligatorio");
+                }if(editTextEmail.getText().toString().isEmpty()){
+                    editTextEmail.setError("Este campo es obligatorio");
+                }if(editTextPassword.getText().toString().isEmpty()){
+                    editTextPassword.setError("Este campo es obligatorio");
+                }if(editTextUsername.getText().toString().isEmpty()){
+                    editTextPassword2.setError("Este campo es obligatorio");
+                }if (password.equals(password2) && esEmailValido(email)) {
                     Toast.makeText(RegisterActivity.this,"Registro correcto", Toast.LENGTH_LONG).show();
                     registerUser();
                 } else {
@@ -150,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
         hasAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(), LoginActivity.class);
+                Intent intent=new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -245,7 +253,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Toast.makeText(RegisterActivity.this,"Registro correcto", Toast.LENGTH_LONG).show();
                         finish();
-                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                        Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent);
                     }
                 },
