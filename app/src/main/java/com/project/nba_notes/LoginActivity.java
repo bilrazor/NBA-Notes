@@ -201,7 +201,10 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             int serverCode = error.networkResponse.statusCode;
                             if (serverCode==403){
-                                Toast.makeText(context,"Nombre de usuario o contraseña incorrectos",Toast.LENGTH_LONG).show();
+                                Toast toast =  Toast.makeText(context,"Nombre de usuario o contraseña incorrectos",Toast.LENGTH_LONG);
+                                toast.getView().setBackgroundColor(Color.RED);
+                                toast.show();
+
                             }else{
                             Toast.makeText(context,"El servidor respondió con "+serverCode,Toast.LENGTH_LONG).show();
                         }}
