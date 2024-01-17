@@ -19,8 +19,15 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.zip.Inflater;
 
@@ -30,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private FragmentContainerView fragmentContainer;
     private SearchView searchView;
+    private static String searchRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchRequest = (String) searchView.getQuery();
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
@@ -107,5 +115,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void retrieveUserInfo(){
         SharedPreferences prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
+    }
+
+    private void sendFilterQuery(){
+        JSONObject requestBody = new JSONObject();
+        try{
+            requestBody.put("a", searchRequest);
+        }catch(JSONException e){
+            throw new RuntimeException(e);
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                "http://10.0.2.2:8000/api/auth/notes/",
+                requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
     }
 }
