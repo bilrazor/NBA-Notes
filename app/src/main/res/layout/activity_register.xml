@@ -38,7 +38,6 @@
         android:id="@+id/edit_text_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:hint="Contraseña"
         android:textColorHint="#CCFF7800"
         android:textColor="#FF7800"
@@ -46,7 +45,7 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edit_text_email"
+       app:layout_constraintBottom_toTopOf="@id/edit_text_password_confirm"
         app:layout_constraintWidth_percent="0.6" />
 
     <EditText
@@ -56,7 +55,7 @@
         android:layout_height="wrap_content"
         android:height="48dp"
         android:textColor="#FF7800"
-        app:layout_constraintTop_toBottomOf="@id/edit_text_password"
+       app:layout_constraintBottom_toTopOf="@id/button_create_account"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:inputType="textPassword"
@@ -81,11 +80,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Crear cuenta"
-        app:layout_constraintTop_toBottomOf="@id/edit_text_password_confirm"
-        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toTopOf="@id/has_account_button"
         app:layout_constraintEnd_toEndOf="@id/edit_text_email"
         app:layout_constraintStart_toStartOf="@id/edit_text_email"
-        android:layout_marginBottom="20dp"
         android:backgroundTint="#FF7800"
         android:textColor="#0020FF"/>
 
@@ -94,7 +91,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="¿Ya tienes una cuenta?"
-        app:layout_constraintTop_toBottomOf="@id/button_create_account"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/edit_text_email"
         app:layout_constraintEnd_toEndOf="@id/edit_text_email"
