@@ -103,7 +103,13 @@ public class NotesViewHolder extends RecyclerView.ViewHolder {
                         note_last_modified.setText(dateFormat.format(data.getLastModified()));
                         data.setFavorite(updatedFavoriteStatus);
                         button_favorite.setImageResource(updatedFavoriteStatus ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
+                        if (updatedFavoriteStatus) {
+                            Toast.makeText(context, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
 
+                        }else{
+                            Toast.makeText(context, "La nota ya no es tu favorita", Toast.LENGTH_SHORT).show();
+
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Toast.makeText(context, "Error al procesar la respuesta", Toast.LENGTH_SHORT).show();

@@ -1,6 +1,7 @@
 package com.project.nba_notes;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ public class MainFragment extends Fragment {
     private View rootView;
     private TextView textViewTitle;
     private ImageButton buttonCreateNote;
+    private String terminoBusqueda = null;
     public MainFragment() {
         // Constructor público vacío requerido por Android para instanciar el fragmento
     }
@@ -48,16 +50,20 @@ public class MainFragment extends Fragment {
         // Verifica si el fragmento está asociado a una actividad
         if (getActivity() != null) {
             // Configuración del RecyclerView
-            realizarFiltrado(); // Llama al método para filtrar datos basados en la categoría
+            realizarFiltrado(terminoBusqueda); // Llama al método para filtrar datos basados en la categoría
             allTheNotes = new ArrayList<>();
             adapter = new NotesRecyclerViewAdapter(allTheNotes, getActivity());
         }
-
-        return rootView; // Devuelve la vista del fragmento
+         return rootView; // Devuelve la vista del fragmento
     }
 
-    private void realizarFiltrado() {
+    private void realizarFiltrado(String terminoBusqueda) {
         String url;
+        if (terminoBusqueda != null && !terminoBusqueda.isEmpty()) {
+            // Si hay un término de búsqueda, construye la URL para la búsqueda
+            url = Server.name + "/api/auth/notes/title?" +
+                    "title=" + Uri.encode(terminoBusqueda);
+        } else {
         switch (category) {
             case "favoritos":
                 url = Server.name + "/api/auth/notes/favorites"; // URL para notas favoritas
@@ -68,8 +74,8 @@ public class MainFragment extends Fragment {
             default:
                 url = ""; // URL por defecto o manejo de categoría desconocida
                 break;
+            }
         }
-
         // Solicitud de red para obtener los datos de las notas
         JsonArrayRequestWithAuthHeader request = new JsonArrayRequestWithAuthHeader(
                 Request.Method.GET,
