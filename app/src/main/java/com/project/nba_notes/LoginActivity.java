@@ -176,11 +176,10 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         String receivedToken;
                         try {
-                            receivedToken = response.getString("sessionToken");
+                            receivedToken = response.getString("jwtToken");
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
-                        Toast.makeText(context, "Token: " + receivedToken, Toast.LENGTH_SHORT).show();
                         SharedPreferences preferences = context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("username", editTextUsername.getText().toString());
