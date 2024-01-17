@@ -114,7 +114,14 @@ public class LoginActivity extends AppCompatActivity {
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendPostLogin();
+
+                if (editTextUsername.getText().toString().isEmpty()){
+                    editTextUsername.setError("Este campo es obligatorio");
+                } if (editTextPassword.getText().toString().isEmpty()) {
+                    editTextPassword.setError("Este campo es obligatorio");
+                }else{
+                    sendPostLogin();
+                }
             }
         });
 
@@ -159,6 +166,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
                 Server.name + "/api/auth/signin",
@@ -172,18 +180,19 @@ public class LoginActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
-                        Toast.makeText(context,"Token: " + receivedToken, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Token: " + receivedToken, Toast.LENGTH_SHORT).show();
                         SharedPreferences preferences = context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("username",editTextUsername.getText().toString());
+                        editor.putString("username", editTextUsername.getText().toString());
                         editor.putString("token", receivedToken);
                         editor.commit();
                         finish();
-                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
-
                     }
+
                 },
+
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -191,8 +200,11 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(context,"Error de conexión",Toast.LENGTH_LONG).show();
                         } else {
                             int serverCode = error.networkResponse.statusCode;
+                            if (serverCode==403){
+                                Toast.makeText(context,"Nombre de usuario o contraseña incorrectos",Toast.LENGTH_LONG).show();
+                            }else{
                             Toast.makeText(context,"El servidor respondió con "+serverCode,Toast.LENGTH_LONG).show();
-                        }
+                        }}
                     }
                 }
         );
