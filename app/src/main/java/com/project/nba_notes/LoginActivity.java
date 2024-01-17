@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         noAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error.networkResponse == null) {
-                            Toast.makeText(context,"La conexión no se ha establecido",Toast.LENGTH_LONG).show();
+                            Toast.makeText(context,"Error de conexión",Toast.LENGTH_LONG).show();
                         } else {
                             int serverCode = error.networkResponse.statusCode;
                             Toast.makeText(context,"El servidor respondió con "+serverCode,Toast.LENGTH_LONG).show();
