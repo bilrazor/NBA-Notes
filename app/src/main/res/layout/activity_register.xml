@@ -18,7 +18,9 @@
         android:textColor="#FF7800"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/register_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="40dp"
         app:layout_constraintWidth_percent="0.6" />
 
     <EditText
@@ -43,9 +45,10 @@
         android:textColor="#FF7800"
         android:height="48dp"
         android:inputType="textPassword"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintBottom_toTopOf="@id/edit_text_password_confirm"
+        app:layout_constraintTop_toBottomOf="@id/edit_text_email"
         app:layout_constraintWidth_percent="0.6" />
 
     <EditText
@@ -55,13 +58,13 @@
         android:layout_height="wrap_content"
         android:height="48dp"
         android:textColor="#FF7800"
-       app:layout_constraintBottom_toTopOf="@id/button_create_account"
+        app:layout_constraintTop_toBottomOf="@id/edit_text_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:inputType="textPassword"
         android:hint="Confirmar contraseña"
-        android:textColorHint="#CCFF7800"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="10dp"
+        android:textColorHint="#CCFF7800" />
 
     <TextView
         android:id="@+id/register_text"
