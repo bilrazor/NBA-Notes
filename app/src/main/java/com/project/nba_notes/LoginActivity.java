@@ -11,8 +11,10 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -188,6 +190,31 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
+
+
+                        Toast toast = Toast.makeText(context, "¡¡¡Bienvenido "+editTextUsername.getText().toString()+"!!!", Toast.LENGTH_LONG);
+                        View view = toast.getView();
+
+                        // Encuentra el TextView dentro del Toast
+                        TextView toastMessage = view.findViewById(android.R.id.message);
+
+                        // Cambia el color del texto
+                        toastMessage.setTextColor(Color.parseColor("#0020FF"));
+
+                        // Crea un nuevo drawable para el fondo
+                        GradientDrawable gd = new GradientDrawable();
+                        // Cambia el color de fondo
+                        gd.setColor(Color.parseColor("#FF7800"));
+
+                        // Aplica el drawable como fondo
+                        view.setBackground(gd);
+
+                        // Ajusta la gravedad del Toast para que se expanda a lo ancho y se pegue al fondo
+                        toast.setGravity(Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 0, 0);
+
+
+                        toast.show();
+
                     }
 
                 },
