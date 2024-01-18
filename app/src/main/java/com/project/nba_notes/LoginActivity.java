@@ -35,6 +35,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+
 public class LoginActivity extends AppCompatActivity {
     Button noAccountButton;
     Button logInButton;
@@ -231,8 +233,15 @@ public class LoginActivity extends AppCompatActivity {
                                 toast.getView().setBackgroundColor(Color.RED);
                                 toast.show();
 
-                            }else{
-                            Toast.makeText(context,"El servidor respondió con "+serverCode,Toast.LENGTH_LONG).show();
+                            } else {
+                            String serverCode2 = null;
+                            try {
+                                serverCode2 = new String(error.networkResponse.data,"utf-8");
+
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Toast.makeText(LoginActivity.this,serverCode2,Toast.LENGTH_LONG).show();
                         }}
                     }
                 }
