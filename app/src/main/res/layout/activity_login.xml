@@ -5,20 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#0020FF">
 
-    <EditText
-        android:id="@+id/password_text"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:hint="Contraseña"
-        android:textColorHint="#CCFF7800"
-        android:textColor="#FF7800"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@id/login_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/user_text"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintWidth_percent="0.6" />
 
     <EditText
         android:id="@+id/user_text"
@@ -28,12 +14,29 @@
         android:textColorHint="#CCFF7800"
         android:textColor="#FF7800"
         app:layout_constraintTop_toBottomOf="@id/login_text"
+        app:layout_constraintBottom_toTopOf="@id/login_button"
+        app:layout_constraintVertical_bias="0.2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="0.6"
-        android:layout_marginTop="30dp"
-
         />
+
+
+    <EditText
+        android:id="@+id/password_text"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:hint="Contraseña"
+        android:textColorHint="#CCFF7800"
+        android:textColor="#FF7800"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_text"
+        app:layout_constraintBottom_toTopOf="@id/login_button"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintWidth_percent="0.6" />
+
 
     <TextView
         android:id="@+id/login_text"
