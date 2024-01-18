@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(intent);
 
 
-                        Toast toast = Toast.makeText(context, "¡¡¡Bienvenido "+editTextUsername.getText().toString()+"!!!", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(context, "¡¡¡Bienvenido/a "+editTextUsername.getText().toString()+"!!!", Toast.LENGTH_LONG);
                         View view = toast.getView();
 
                         // Encuentra el TextView dentro del Toast
