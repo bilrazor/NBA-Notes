@@ -269,8 +269,6 @@ public class NotesActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        isLoadingData = false;
-                        hideLoadingPanel();
                         noteDate.setVisibility(View.VISIBLE);
                         try {
                             String dateString = response.getString("lastModified");
@@ -280,17 +278,14 @@ public class NotesActivity extends AppCompatActivity {
                         } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }
-
                         // Muestra un mensaje de éxito.
                         Toast.makeText(context, "Nota creada", Toast.LENGTH_SHORT).show();
                         try {
                             // Aquí asumiendo que el servidor devuelve el ID de la nota recién creada
                             int newNoteId = response.getInt("id");
                             noteId = newNoteId; // Actualiza el noteId con el ID de la nueva nota
-
-
-                             configureButtonState(buttonDelete,true);
-
+                            configureButtonState(buttonDelete,true);
+                            hideLoadingPanel();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -423,13 +418,14 @@ public class NotesActivity extends AppCompatActivity {
 
     // Evento de retroceso personalizado para manejar cuando el usuario presiona el botón de regreso.
     public void onBack() {
-        // Si los campos de texto no están vacíos, intenta guardar la nota antes de cerrar la actividad
-        if ((buttonCheck.isEnabled()) && (!isEmpty(noteTitle) || !isEmpty(noteContent))) {
-            saveNote();
-        }else if(isEmpty(noteTitle) && isEmpty(noteContent) && !(noteId == -1)){
-            deleteNote(noteId);
+        if (buttonCheck.isEnabled()){
+            if(!isEmpty(noteTitle) || !isEmpty(noteContent)){
+                saveNote();
+            }else if (isEmpty(noteTitle) && isEmpty(noteContent)){
+                setNoteDelete();
+             }
         }
-        finish();
+         finish();
     }
 
 
@@ -441,12 +437,16 @@ public class NotesActivity extends AppCompatActivity {
 
     // Intenta guardar o actualizar la nota dependiendo de si es una nota nueva o una existente.
     private void saveNote() {
-        // Si es una nueva nota (noteId == -1), y hay contenido, crea una nueva nota.
-        if (noteId == -1 && (!isEmpty(noteTitle) || !isEmpty(noteContent))) {
-            createNote();
-            // Si es una nota existente y hay contenido, actualiza la nota.
-        } else if (noteId != -1 && (!isEmpty(noteTitle) || !isEmpty(noteContent))) {
-            updateNote(noteId);
+        if (!isEmpty(noteTitle) || !isEmpty(noteContent)){
+            // Si es una nueva nota (noteId == -1), y hay contenido, crea una nueva nota.
+            if (noteId == -1){
+                createNote();
+                // Si es una nota existente y hay contenido, actualiza la nota.
+            }else if(noteId != -1){
+                updateNote(noteId);
+            }
+        }else{
+            Toast.makeText(context,"Necesita introducir texto",Toast.LENGTH_SHORT).show();
         }
     }
     private String parseDate (String dateString) throws ParseException {
@@ -548,8 +548,6 @@ public class NotesActivity extends AppCompatActivity {
         if (noteId != -1) {
             deleteNote(noteId);
             finish();// Cierra la actividad
-        } else {
-            Toast.makeText(context, "No hay ninguna nota para eliminar.", Toast.LENGTH_SHORT).show();
         }
     }
     private void changueStateFavorites(){
