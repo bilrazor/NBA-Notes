@@ -2,6 +2,7 @@ package com.project.nba_notes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -12,10 +13,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
 
 import com.android.volley.Request;
@@ -30,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -138,6 +144,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                    .commit();
         }
         else if (id == R.id.menu_item_order) {
+            LayoutInflater inflater = getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.order_dialog, null);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setView(dialogView);
+
+            AlertDialog dialog = builder.create();
+
+            Button okButton = (Button) dialogView.findViewById(R.id.dialog_ok_button);
+            RadioButton ascRadioButton = (RadioButton) dialogView.findViewById(R.id.asc_radio_button);
+            RadioButton descRadioButton = (RadioButton) dialogView.findViewById(R.id.desc_radio_button);
+
+            descRadioButton.isChecked();
+
+            okButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialog.show();
         }
         drawerLayout.closeDrawers();
 
@@ -149,20 +177,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void sendFilterQuery(){
-        JSONObject jsonObject = new JSONObject();
-        JSONArray requestBody = new JSONArray();
-        try{
-            jsonObject.put("title", searchRequest);
-            requestBody.put(1, jsonObject);
-        }catch(JSONException e){
-            throw new RuntimeException(e);
-        }
         allTheNotes.clear();
 
         JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
                 Request.Method.GET,
-                "http://10.0.2.2:8000/api/auth/notes",
-                requestBody,
+                "http://10.0.2.2:8000/api/auth/title?title=" + searchRequest,
+                null,
                 response -> {
                     for(int i = 0; i < response.length(); i++){
                         try{
