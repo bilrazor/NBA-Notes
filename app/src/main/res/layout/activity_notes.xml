@@ -29,21 +29,32 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="4dp"
                 android:textSize="30dp"
                 android:hint="Titulo de la nota"
                 android:inputType="textMultiLine"
                 android:gravity="top"
                 />
             <TextView
+                android:id="@+id/locationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/noteTitle"
+                android:layout_marginTop="4dp"
+                android:textSize="13sp"
+                android:visibility="gone"
+                android:textColor="#757575" />
+
+            <TextView
                 android:id="@+id/noteDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/noteTitle"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="4dp"
                 android:gravity="top"
                 android:hint="fecha de la nota"
+                android:textSize="13sp"
                 />
 
             <EditText
@@ -52,11 +63,13 @@
                 android:layout_height="wrap_content"
                 android:minHeight="300dp"
                 android:maxHeight="2500dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 android:hint="Contenido de la nota"
                 android:inputType="textMultiLine"
                 android:gravity="top"
                 android:background="@android:color/white"
-                android:layout_margin="4dp"
+                android:layout_marginTop="4dp"
 
 
                 />
@@ -67,24 +80,27 @@
     <!-- Contenedor para los botones 'undo', 'redo', y 'check' -->
     <LinearLayout
         android:id="@+id/actionButtonContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:background="@android:color/white"
-        android:padding="15dp"
-        >
+        android:padding="15dp">
+
         <ImageButton
             android:id="@+id/buttonBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_arrow_back_ios_24" />
+
         <Space
-            android:layout_width="185dp"
-            android:layout_height="match_parent" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
         <ImageButton
             android:id="@+id/buttonUndo"
             android:layout_width="wrap_content"
@@ -109,7 +125,8 @@
             android:src="@drawable/baseline_check_24" />
     </LinearLayout>
 
-    <LinearLayout
+
+<LinearLayout
         android:id="@+id/bottomButtonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -130,18 +147,20 @@
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_text_increase_24" />
 
-        <Space
-            android:layout_width="85dp"
-            android:layout_height="match_parent" />
-        <ImageButton
-            android:id="@+id/buttonFavorite"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/baseline_star_border_24" />
-        <Space
-            android:layout_width="85dp"
-            android:layout_height="match_parent" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+                <ImageButton
+                    android:id="@+id/buttonFavorite"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/baseline_star_border_24" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
         <ImageButton
             android:id="@+id/buttonDelete"

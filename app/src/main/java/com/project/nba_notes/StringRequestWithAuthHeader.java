@@ -28,7 +28,7 @@ public class StringRequestWithAuthHeader extends StringRequest {
         // Recupera el token de SharedPreferences o de donde lo tengas almacenado
         //SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
        // String token = sharedPreferences.getString("token", ""); // Asegúrate de descomentar esta línea y manejar la obtención del token correctamente
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA1OTM1MjQ0LCJpYXQiOjE3MDUzMzUyNDR9.-SxYFRZIBAkCFS4JHb8WgGr2MTeZ_nzTi1c9_8XJM7OUgXQdijKjQKXB0lyK8KiySD6WALdjj5bwDj7b2J3DlA";
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA2NTQzNTg2LCJpYXQiOjE3MDU5NDM1ODZ9._h5JyV6SkacQVe81l14mgnj2dtpPKAheYPe07q3xzLkOhRAnDYMTynQT4W66W6q1CB9VQNVtHV6isQCIwsSpuA";
 
         headers.put("Authorization", "Bearer " + token);
         return headers;

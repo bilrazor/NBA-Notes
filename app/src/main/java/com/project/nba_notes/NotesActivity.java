@@ -2,7 +2,12 @@ package com.project.nba_notes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -11,22 +16,35 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 // Esta clase representa una actividad en una aplicación de Android para la creación y edición de notas.
 public class NotesActivity extends AppCompatActivity {
@@ -34,16 +52,9 @@ public class NotesActivity extends AppCompatActivity {
     // Variables de instancia para almacenar el contexto, campos de texto para el título, contenido y fecha de la nota,
     // así como botones de la interfaz de usuario y otros estados relevantes.
     private Context context = this;
-    private EditText noteTitle;
-    private EditText noteContent;
-    private TextView noteDate;
-    private ImageButton buttonCheck;
-    private ImageButton buttonDelete;
-    private ImageButton buttonUndo;
-    private ImageButton buttonRedo;
-    private ImageButton buttonBack;
-    private ImageButton buttonFavorite;
-    private ImageButton buttonNoteLetter;
+    private EditText noteTitle,noteContent;
+    private TextView noteDate, locationName;
+    private ImageButton buttonCheck,buttonDelete,buttonUndo,buttonRedo,buttonBack,buttonFavorite,buttonNoteLetter;
     private boolean noteFavorite = false;
     private boolean isTextSizeIncreased = false;
     private UndoRedoHelper undoRedoHelper = new UndoRedoHelper();
@@ -53,10 +64,16 @@ public class NotesActivity extends AppCompatActivity {
     private RelativeLayout loadingPanel;
     private boolean isUndoAvailable;
     private boolean isRedoAvailable;
+    private boolean onBackPressed = false;
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private double latitude,longitude;
+
     // Este método se llama cuando se crea la actividad.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         // Establece el diseño de la actividad desde un archivo de recursos XML.
         setContentView(R.layout.activity_notes);
 
@@ -68,6 +85,8 @@ public class NotesActivity extends AppCompatActivity {
         configureInitialButtonStates();
         // Configura los listeners para los botones y otros componentes interactivos.
         setupListeners();
+
+
         // Agrega un TextWatcher a noteTitle para manejar cambios de texto.
         noteTitle.addTextChangedListener(new TextWatcher() {
             private String previousText = "";
@@ -94,8 +113,7 @@ public class NotesActivity extends AppCompatActivity {
                     previousText = newTitle;
                 }
                 updateUndoRedoButtonState();
-                configureButtonState(buttonCheck, true);
-            }
+                checkIfTextFieldsAreEmpty();            }
         });
 
         // Similar al TextWatcher de noteTitle, este se aplica a noteContent.
@@ -127,8 +145,7 @@ public class NotesActivity extends AppCompatActivity {
                     previousText = newContent;
                 }
                 updateUndoRedoButtonState();
-                configureButtonState(buttonCheck,true);
-
+                checkIfTextFieldsAreEmpty();
             }
 
         });
@@ -181,12 +198,63 @@ public class NotesActivity extends AppCompatActivity {
                 updateUndoRedoButtonState();
             }
         });
-
-
-
-
+        startLocationUpdates();
     }
 
+
+    private void startLocationUpdates() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                    }
+                }
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        } else {
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
+
+
+
+
+    private void getLocationName(double latitude, double longitude) {
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                locationName.setVisibility(View.VISIBLE);
+                String featureName = address.getFeatureName();
+                String locality = address.getLocality();
+                String adminArea = address.getAdminArea();
+                String countryName = address.getCountryName();
+                String fullAddress = locality + ", " + adminArea + ", " + countryName;
+                locationName.setText(fullAddress);
+            } else {
+                // Maneja el caso donde no se encuentra la dirección
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     // Método para obtener una nota desde un servidor mediante una petición GET.
     public void obtainNote(int noteId) {
@@ -207,6 +275,9 @@ public class NotesActivity extends AppCompatActivity {
                             String title = response.getString("title");
                             String dateString = response.getString("lastModified");
                             String content = response.getString("content");
+                            double latitude = response.getDouble("latitude");
+                            double longitude = response.getDouble("longitude");
+                            getLocationName(latitude, longitude);
                             noteFavorite = response.getBoolean("favorite");
 
                             buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
@@ -256,6 +327,9 @@ public class NotesActivity extends AppCompatActivity {
             requestBody.put("title", noteTitle.getText().toString());
             requestBody.put("content", noteContent.getText().toString());
             requestBody.put("favorite", noteFavorite);
+            requestBody.put("latitude",latitude);
+            requestBody.put("longitude",longitude);
+
         } catch (JSONException e) {
             // Manejo de excepciones JSON.
             throw new RuntimeException(e);
@@ -272,6 +346,9 @@ public class NotesActivity extends AppCompatActivity {
                         noteDate.setVisibility(View.VISIBLE);
                         try {
                             String dateString = response.getString("lastModified");
+                            double latitude = response.getDouble("latitude");
+                            double longitude = response.getDouble("longitude");
+                            getLocationName(latitude, longitude);
                             noteDate.setText(parseDate(dateString));
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
@@ -306,7 +383,6 @@ public class NotesActivity extends AppCompatActivity {
         // Añade la petición a la cola y la ejecuta.
         queue.add(request);
     }
-
     // Método para eliminar una nota en el servidor mediante una petición DELETE.
     public void deleteNote(int noteId) {
         showLoadingPanel();
@@ -361,6 +437,9 @@ public class NotesActivity extends AppCompatActivity {
                         Toast.makeText(context, "Nota actualizada", Toast.LENGTH_SHORT).show();
                         try {
                             String dateString = response.getString("lastModified");
+                            double latitude = response.getDouble("latitude");
+                            double longitude = response.getDouble("longitude");
+                            getLocationName(latitude, longitude);
                             noteDate.setText(parseDate(dateString));
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
@@ -387,7 +466,7 @@ public class NotesActivity extends AppCompatActivity {
     private void checkIfTextFieldsAreEmpty() {
         String title = noteTitle.getText().toString();
         String content = noteContent.getText().toString();
-        boolean isAnyFieldNotEmpty = !title.isEmpty() || !content.isEmpty();
+        boolean isAnyFieldNotEmpty = !title.isEmpty() && !content.isEmpty();
         // Si alguno de los campos no está vacío, habilita el botón para guardar/check.
         // Si ambos campos están vacíos, deshabilita el botón.
         configureButtonState(buttonCheck, isAnyFieldNotEmpty);
@@ -418,14 +497,18 @@ public class NotesActivity extends AppCompatActivity {
 
     // Evento de retroceso personalizado para manejar cuando el usuario presiona el botón de regreso.
     public void onBack() {
+        onBackPressed = true;
+        if (!buttonCheck.isEnabled()){
+            finish();
+
+        }
         if (buttonCheck.isEnabled()){
-            if(!isEmpty(noteTitle) || !isEmpty(noteContent)){
+            if(!isEmpty(noteTitle) && !isEmpty(noteContent)){
                 saveNote();
             }else if (isEmpty(noteTitle) && isEmpty(noteContent)){
                 setNoteDelete();
              }
         }
-         finish();
     }
 
 
@@ -485,6 +568,9 @@ public class NotesActivity extends AppCompatActivity {
         setButtonsEnabled(true);
         updateUndoRedoButtonState();
         isLoadingData = false;
+        if(onBackPressed){
+            finish();
+        }
     }
     private void setButtonsEnabled(boolean isEnabled) {
         buttonCheck.setEnabled(false);
@@ -520,6 +606,8 @@ public class NotesActivity extends AppCompatActivity {
         noteTitle = findViewById(R.id.noteTitle);
         noteDate = findViewById(R.id.noteDate);
         noteContent = findViewById(R.id.noteContent);
+        locationName = findViewById(R.id.locationName);
+
         // Configura la cola de solicitudes HTTP.
         queue = Volley.newRequestQueue(this);
 
