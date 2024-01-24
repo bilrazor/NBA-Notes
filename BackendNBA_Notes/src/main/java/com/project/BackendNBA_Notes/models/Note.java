@@ -25,6 +25,8 @@ public class Note {
     private boolean favorite;
     @Column
     private LocalDateTime lastModified;
+    private Double latitude;
+    private Double longitude;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
