@@ -3,7 +3,9 @@ package com.project.nba_notes;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -11,6 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,16 +31,16 @@ import sun.bob.mcalendarview.vo.DateData;
 
 public class CalendarFragment extends Fragment {
     private Date lastModified;
+    private JSONArray notesArray;
     private String title;
     MCalendarView mcalendar;
     TextView date_view;
 
-
-
-    public CalendarFragment(Date lastModified, String title){
+    public CalendarFragment(Date lastModified, String title) {
         super(R.layout.fragment_calendar);
         this.lastModified = lastModified;
         this.title = title;
+
     }
 
     public Date NotesData(JSONObject dateinfo) {
@@ -44,10 +51,16 @@ public class CalendarFragment extends Fragment {
             String modifiedDateString = dateString.substring(0, dateString.length() - 3) + "Z";
 
             // Configurar SimpleDateFormat para manejar la fecha en formato ISO 8601
-            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
             isoFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Asegúrate de que el objeto Date esté en UTC
 
-            this.lastModified = isoFormat.parse(modifiedDateString);
+            // Parsear la cadena de fecha y luego formatearla al formato deseado
+            Date parsedDate = isoFormat.parse(modifiedDateString);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String formattedDate = outputFormat.format(parsedDate);
+
+            // Asignar la fecha formateada al campo lastModified
+            this.lastModified = outputFormat.parse(formattedDate);
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -55,53 +68,96 @@ public class CalendarFragment extends Fragment {
     }
 
 
-    public Date getLastModified() {
-        return lastModified;
-    }
+    private void getNotes() {
+        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
+                Request.Method.GET,
+                Server.name + "/api/auth/notes",
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        // Almacena las notas en la variable de instancia
+                        notesArray = response;
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject note = response.getJSONObject(i);
+                                String title = note.getString("title");
+                                String lastModified = note.getString("lastModified");
 
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
+                                // Aquí puedes procesar el título y la fecha de modificación de cada nota
+                                // Por ejemplo, podrías mostrarlos en la interfaz de usuario
+                                Toast.makeText(getContext(), "Funca", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error.networkResponse == null) {
+                            Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_LONG).show();
+                        } else {
+                            String serverCode = null;
+                            try {
+                                serverCode = new String(error.networkResponse.data, "utf-8");
 
-    public String getTitle() {
-        return title;
+                            } catch (UnsupportedEncodingException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Toast.makeText(getContext(), serverCode, Toast.LENGTH_LONG).show;
+                        }
+                    }
+                
+                    },
+                getContext()
+        );
     }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //calendar = (CalendarView) getView().findViewById(R.id.calendar);
-        date_view = (TextView) getView().findViewById(R.id.date_view);
-        mcalendar = (MCalendarView) getView().findViewById(R.id.mcalendar);
+        date_view = view.findViewById(R.id.date_view);
+        mcalendar = view.findViewById(R.id.mcalendar);
 
+        getNotes();  // Llama al método para obtener las notas
 
-     mcalendar.setOnDateClickListener(new OnDateClickListener() {
-         @Override
-         public void onDateClick(View view, DateData date) {
-             String Date=date.getDayString()+"-"+date.getMonthString()+"-"+date.getYear();
-             date_view.setText(Date);
-         }
-     });
+        mcalendar.setOnDateClickListener(new OnDateClickListener() {
+            @Override
+            public void onDateClick(View view, DateData date) {
+                if (notesArray != null) {
+                    // Utiliza SimpleDateFormat para formatear la fecha de modificación seleccionada
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
 
+                    // Compara la fecha seleccionada con la fecha de modificación de cada nota
+                    for (int i = 0; i < notesArray.length(); i++) {
+                        try {
+                            JSONObject note = notesArray.getJSONObject(i);
+                            String lastModified = note.getString("lastModified");
 
-/*
-        calendar.setOnDateChangeListener(
-                new CalendarView.OnDateChangeListener() {
-                    @Override
-                    public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                        String Date = dayOfMonth + "-" + (month + 1) + "-" + year;
-                        date_view.setText(Date);
+                            // Formatea la fecha de modificación de la nota
+                            Date modifiedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                                    .parse(lastModified);
+                            String formattedDate = dateFormat.format(modifiedDate);
+
+                            // Si la fecha seleccionada coincide con la fecha de modificación de la nota, muestra el título
+                            if (selectedDate.equals(formattedDate)) {
+                                mcalendar.markDate(date);
+                                String title = note.getString("title");
+                                Toast.makeText(getContext(), "Título: " + title, Toast.LENGTH_SHORT).show();
+                                break;  // Puedes detener el bucle una vez que se encuentra una coincidencia
+                            }
+                        } catch (ParseException | JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-        );
-*/
-
-
+            }
+        });
     }
 
 }
+
+
