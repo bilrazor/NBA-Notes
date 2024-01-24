@@ -38,7 +38,7 @@ public class CalendarFragment extends Fragment {
     public CalendarFragment() {
         super(R.layout.fragment_calendar);
     }
-
+/*
     public Date notesData(JSONObject dateinfo) {
         try {
             String dateString = dateinfo.getString("lastModified");
@@ -62,6 +62,24 @@ public class CalendarFragment extends Fragment {
         }
         return lastModified;
     }
+*/
+/*
+    public Date notesData(JSONObject dateinfo) {
+        try {
+            String dateString = dateinfo.getString("lastModified");
+
+            // Asegúrate de que el formato de fecha refleje la presencia de microsegundos
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault());
+            isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            Date parsedDate = isoFormat.parse(dateString);
+            this.lastModified = parsedDate;
+        } catch (JSONException | ParseException e) {
+            e.printStackTrace();
+        }
+        return lastModified;
+    }
+*/
 
     private void getNotes() {
         JsonArrayRequest request = new JsonArrayRequest(
@@ -74,16 +92,22 @@ public class CalendarFragment extends Fragment {
                         // Almacena las notas en la variable de instancia
                         notesArray = response;
                         try {
+                            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault());
+                            isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject note = response.getJSONObject(i);
                                 String title = note.getString("title");
                                 String lastModified = note.getString("lastModified");
 
+                                // Parsea la fecha directamente aquí
+                                Date modifiedDate = isoFormat.parse(lastModified);
+                                String formattedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(modifiedDate);
+
                                 // Aquí puedes procesar el título y la fecha de modificación de cada nota
-                                // Por ejemplo, podrías mostrarlos en la interfaz de usuario
-                                Toast.makeText(getContext(), "Funca", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Título: " + title + "\nFecha: " + formattedDate, Toast.LENGTH_SHORT).show();
                             }
-                        } catch (JSONException e) {
+                        } catch (JSONException | ParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -124,27 +148,23 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onDateClick(View view, DateData date) {
                 if (notesArray != null) {
-                    // Utiliza SimpleDateFormat para formatear la fecha de modificación seleccionada
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault());
                     String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
 
-                    // Compara la fecha seleccionada con la fecha de modificación de cada nota
                     for (int i = 0; i < notesArray.length(); i++) {
                         try {
                             JSONObject note = notesArray.getJSONObject(i);
                             String lastModified = note.getString("lastModified");
 
-                            // Formatea la fecha de modificación de la nota
-                            Date modifiedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                            Date modifiedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault())
                                     .parse(lastModified);
                             String formattedDate = dateFormat.format(modifiedDate);
 
-                            // Si la fecha seleccionada coincide con la fecha de modificación de la nota, muestra el título
                             if (selectedDate.equals(formattedDate)) {
                                 mcalendar.markDate(date);
                                 String title = note.getString("title");
                                 Toast.makeText(getContext(), "Título: " + title, Toast.LENGTH_SHORT).show();
-                                break;  // Puedes detener el bucle una vez que se encuentra una coincidencia
+                                break;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
