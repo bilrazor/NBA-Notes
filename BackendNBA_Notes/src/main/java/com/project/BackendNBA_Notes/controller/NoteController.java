@@ -82,15 +82,30 @@ public class NoteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NoteDTO> updateNote(@PathVariable Long id, @RequestBody Note noteDetails, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Note note = noteRepository.findById(id).orElseThrow(() -> new RuntimeException("Note not found"));
+    public ResponseEntity<NoteDTO> updateNote(@PathVariable Long id,
+                                              @RequestBody Note noteDetails,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
+
         if (!note.getUser().getId().equals(userDetails.getId())) {
             throw new RuntimeException("Access denied");
         }
-        note.setContent(noteDetails.getContent());
+
+        // Comprueba si el título o el contenido han sido proporcionados
+        if (noteDetails.getTitle() != null) {
+            note.setTitle(noteDetails.getTitle());
+        }
+        if (noteDetails.getContent() != null) {
+            note.setContent(noteDetails.getContent());
+        }
+
+        // Actualiza siempre el estado de favoritos
         note.setFavorite(noteDetails.isFavorite());
+
         Note updatedNote = noteRepository.save(note);
         NoteDTO noteDTO = dtoService.convertToDTO(updatedNote);
+
         return ResponseEntity.ok(noteDTO);
     }
 
@@ -102,6 +117,13 @@ public class NoteController {
         }
         noteRepository.deleteById(id);
         return ResponseEntity.ok("Eliminado con exito");
+    }
+    @GetMapping("/title")
+    public List<NoteDTO> searchNote(@RequestParam(name = "title", required=true) String title ,  @AuthenticationPrincipal UserDetailsImpl userDetails){
+        List<Note> notes = noteRepository.searchNotesByUserId(userDetails.getId(),title);
+        return notes.stream()
+                .map(dtoService::convertToDTO)
+                .collect(Collectors.toList());
     }
 }
 
