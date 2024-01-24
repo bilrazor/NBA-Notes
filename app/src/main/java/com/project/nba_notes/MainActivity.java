@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         // Obtén el FragmentManager
         getSupportFragmentManager().beginTransaction()
                 // Reemplaza el contenedor con el ID 'container' por el CalendarFragment
-                .replace(R.id.container, new CalendarFragment(fechaActual,"Primera nota"))
+                .replace(R.id.container, new CalendarFragment())
                 .commit();
     }
 

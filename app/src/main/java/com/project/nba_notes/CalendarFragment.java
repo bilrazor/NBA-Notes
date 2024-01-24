@@ -5,10 +5,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,11 +12,15 @@ import androidx.fragment.app.Fragment;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -32,18 +32,14 @@ import sun.bob.mcalendarview.vo.DateData;
 public class CalendarFragment extends Fragment {
     private Date lastModified;
     private JSONArray notesArray;
-    private String title;
     MCalendarView mcalendar;
     TextView date_view;
 
-    public CalendarFragment(Date lastModified, String title) {
+    public CalendarFragment() {
         super(R.layout.fragment_calendar);
-        this.lastModified = lastModified;
-        this.title = title;
-
     }
 
-    public Date NotesData(JSONObject dateinfo) {
+    public Date notesData(JSONObject dateinfo) {
         try {
             String dateString = dateinfo.getString("lastModified");
 
@@ -64,12 +60,11 @@ public class CalendarFragment extends Fragment {
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
-        return this.lastModified;
+        return lastModified;
     }
 
-
     private void getNotes() {
-        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
+        JsonArrayRequest request = new JsonArrayRequest(
                 Request.Method.GET,
                 Server.name + "/api/auth/notes",
                 null,
@@ -96,23 +91,25 @@ public class CalendarFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();  // Imprimir detalles del error en la consola
                         if (error.networkResponse == null) {
                             Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_LONG).show();
                         } else {
                             String serverCode = null;
                             try {
                                 serverCode = new String(error.networkResponse.data, "utf-8");
-
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
-                            Toast.makeText(getContext(), serverCode, Toast.LENGTH_LONG).show;
+                            Toast.makeText(getContext(), serverCode, Toast.LENGTH_LONG).show();
                         }
                     }
-                
-                    },
-                getContext()
+                }
+
         );
+
+        // Agrega esta línea para enviar la solicitud
+        Volley.newRequestQueue(getContext()).add(request);
     }
 
     @Override
@@ -149,7 +146,7 @@ public class CalendarFragment extends Fragment {
                                 Toast.makeText(getContext(), "Título: " + title, Toast.LENGTH_SHORT).show();
                                 break;  // Puedes detener el bucle una vez que se encuentra una coincidencia
                             }
-                        } catch (ParseException | JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -157,7 +154,4 @@ public class CalendarFragment extends Fragment {
             }
         });
     }
-
 }
-
-
