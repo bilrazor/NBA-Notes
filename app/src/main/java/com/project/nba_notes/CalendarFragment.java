@@ -1,5 +1,8 @@
 package com.project.nba_notes;
 
+import static sun.bob.mcalendarview.utils.CalendarUtil.date;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +32,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import sun.bob.mcalendarview.MCalendarView;
+import sun.bob.mcalendarview.MarkStyle;
 import sun.bob.mcalendarview.listeners.OnDateClickListener;
 import sun.bob.mcalendarview.vo.DateData;
 
@@ -61,30 +65,27 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onDateClick(View view, DateData date) {
                 if (notesArray != null) {
+                    String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
 
-                   // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
-                   String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
-                   
+                    StringBuilder titlesStringBuilder = new StringBuilder();
+
                     for (int i = 0; i < notesArray.length(); i++) {
                         try {
-                            JSONObject NoteDates = notesArray.getJSONObject(i);
-                            String lastModified = NoteDates.getString("lastModified");
+                            JSONObject note = notesArray.getJSONObject(i);
+                            String lastModified = note.getString("lastModified");
                             parseDate(lastModified);
-                           // Date modifiedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-                             //       .parse(lastModified);
-                           // String formattedDate = dateFormat.format(modifiedDate);
 
                             if (selectedDate.equals(parseDate(lastModified))) {
-                                mcalendar.markDate(date);
-                                String title = NoteDates.getString("title");
-                                date_view.setText(title);
+                                String title = note.getString("title");
+                                titlesStringBuilder.append(title).append("\n");
                                 Log.d("CalendarFragment", "Title: " + title + ", Date: " + parseDate(lastModified));
-                                break;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
+
+                    date_view.setText(titlesStringBuilder.toString().trim()); // Display all titles
                 }
             }
         });
@@ -105,15 +106,20 @@ public class CalendarFragment extends Fragment {
                         try {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject note = response.getJSONObject(i);
-                                String title = note.getString("title");
                                 String lastModified = note.getString("lastModified");
+                                int year = Integer.parseInt(lastModified.substring(0, 4));
+                                int month = Integer.parseInt(lastModified.substring(5,7));
+                                int day = Integer.parseInt(lastModified.substring(8,10));
 
-                                // Aquí puedes procesar el título y la fecha de modificación de cada nota
-                                Toast.makeText(getContext(), "Título: " + title + "\nFecha: " + parseDate(lastModified), Toast.LENGTH_SHORT).show();
+                                mcalendar.setMarkedStyle(MarkStyle.BACKGROUND, Color.RED);
+                                mcalendar.markDate(year,month,day);
+
+
                             }
-                        } catch (JSONException | java.text.ParseException e) {
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
                     }
                 },
                 new Response.ErrorListener() {
