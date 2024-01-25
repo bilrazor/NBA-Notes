@@ -28,9 +28,11 @@ public class JsonArrayRequestWithAuthHeader2 extends JsonArrayRequest {
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        SharedPreferences preferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        /*SharedPreferences preferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
         String sessionToken = preferences.getString("token", "");
+*/
 
+        String sessionToken=""
         HashMap<String, String> myHeaders = new HashMap<>();
         myHeaders.put("Authorization", "Bearer " + sessionToken);
         return myHeaders;

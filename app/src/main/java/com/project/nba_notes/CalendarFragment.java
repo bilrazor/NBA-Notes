@@ -82,7 +82,7 @@ public class CalendarFragment extends Fragment {
 */
 
     private void getNotes() {
-        JsonArrayRequest request = new JsonArrayRequest(
+        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
                 Request.Method.GET,
                 Server.name + "/api/auth/notes",
                 null,
@@ -128,9 +128,11 @@ public class CalendarFragment extends Fragment {
                             Toast.makeText(getContext(), serverCode, Toast.LENGTH_LONG).show();
                         }
                     }
-                }
+                },
+                getContext()
 
         );
+
 
         // Agrega esta línea para enviar la solicitud
         Volley.newRequestQueue(getContext()).add(request);
@@ -163,7 +165,7 @@ public class CalendarFragment extends Fragment {
                             if (selectedDate.equals(formattedDate)) {
                                 mcalendar.markDate(date);
                                 String title = note.getString("title");
-                                Toast.makeText(getContext(), "Título: " + title, Toast.LENGTH_SHORT).show();
+                                date_view.setText(title);
                                 break;
                             }
                         } catch (Exception e) {
