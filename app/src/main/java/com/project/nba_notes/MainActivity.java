@@ -22,8 +22,10 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -40,6 +42,7 @@ import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Context context = this;
+    private RequestQueue queue;
     private MaterialToolbar toolbar;
     private DrawerLayout drawerLayout;
     private FragmentContainerView fragmentContainer;
@@ -156,11 +159,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             RadioButton ascRadioButton = (RadioButton) dialogView.findViewById(R.id.asc_radio_button);
             RadioButton descRadioButton = (RadioButton) dialogView.findViewById(R.id.desc_radio_button);
 
-            descRadioButton.isChecked();
-
             okButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    MainFragment frag = new MainFragment();
+
+                    if (descRadioButton.isChecked()) {
+                        frag.sortNotes(false);
+                    }
+                    
+                    if (ascRadioButton.isChecked()) {
+                        frag.sortNotes(true);
+                    }
+
                     dialog.dismiss();
                 }
             });
@@ -200,5 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 },
                 context
         );
+        queue.add(request);
     }
 }
