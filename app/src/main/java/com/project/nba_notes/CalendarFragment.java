@@ -64,19 +64,19 @@ public class CalendarFragment extends Fragment {
 
                    // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
                    String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
-
+                   
                     for (int i = 0; i < notesArray.length(); i++) {
                         try {
-                            JSONObject note = notesArray.getJSONObject(i);
-                            String lastModified = note.getString("lastModified");
+                            JSONObject NoteDates = notesArray.getJSONObject(i);
+                            String lastModified = NoteDates.getString("lastModified");
                             parseDate(lastModified);
                            // Date modifiedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
                              //       .parse(lastModified);
                            // String formattedDate = dateFormat.format(modifiedDate);
 
-                            if (selectedDate.equals( parseDate(lastModified))) {
+                            if (selectedDate.equals(parseDate(lastModified))) {
                                 mcalendar.markDate(date);
-                                String title = note.getString("title");
+                                String title = NoteDates.getString("title");
                                 date_view.setText(title);
                                 Log.d("CalendarFragment", "Title: " + title + ", Date: " + parseDate(lastModified));
                                 break;
@@ -147,7 +147,7 @@ public class CalendarFragment extends Fragment {
         Date date = isoFormat.parse(dateString);
 
         // Formatear la fecha a un formato más amigable
-        SimpleDateFormat friendlyFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+        SimpleDateFormat friendlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return friendlyFormat.format(date);
     }
 }
