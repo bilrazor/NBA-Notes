@@ -12,6 +12,7 @@
         app:layout_constraintTop_toBottomOf="@id/actionButtonContainer"
         app:layout_constraintBottom_toTopOf="@id/bottomButtonContainer"
         app:layout_constraintStart_toStartOf="parent"
+        android:background="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent">
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,6 +35,8 @@
                 android:hint="Titulo de la nota"
                 android:inputType="textMultiLine"
                 android:gravity="top"
+                android:background="?attr/colorOnPrimary"
+
                 />
             <TextView
                 android:id="@+id/locationName"
@@ -69,7 +72,7 @@
                 android:inputType="textMultiLine"
                 android:gravity="top"
                 android:background="@android:color/white"
-                android:layout_marginTop="4dp"
+                android:paddingTop="5dp"
 
 
                 />
@@ -86,8 +89,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@android:color/white"
-        android:padding="15dp">
+        android:background="@drawable/gradientnotes"
+        android:padding="8dp"
+        >
 
         <ImageButton
             android:id="@+id/buttonBack"
@@ -133,9 +137,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@android:color/white"
+        android:background="@drawable/gradientnotes"
         android:elevation="8dp"
-        android:layout_marginTop="2dp"
         android:padding="3dp"
         >
 
