@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,10 @@ public class MainFragment extends Fragment {
     private TextView textViewTitle;
     private ImageButton buttonCreateNote;
     private String terminoBusqueda = null;
+    private RelativeLayout loadingPanelMain;
+    private TextView loaderTextView;
+    private boolean isLoading = false;
+
     public MainFragment() {
         // Constructor público vacío requerido por Android para instanciar el fragmento
     }
@@ -58,6 +64,8 @@ public class MainFragment extends Fragment {
     }
 
     private void realizarFiltrado(String terminoBusqueda) {
+        showLoader(); // Mostrar el loader antes de la solicitud de red
+
         String url;
         if (terminoBusqueda != null && !terminoBusqueda.isEmpty()) {
             // Si hay un término de búsqueda, construye la URL para la búsqueda
@@ -96,9 +104,11 @@ public class MainFragment extends Fragment {
                     sortNotes(false);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     recyclerView.setAdapter(adapter);
+                    hideLoader();
                 },
                 error -> {
                         // Muestra un mensaje más detallado
+                        hideLoader();
                         String mensajeError = error.getMessage() == null ? "Error desconocido" : error.getMessage();
                         Toast.makeText(getActivity(), "Error al cargar datos: " + mensajeError,Toast.LENGTH_LONG).show();
                 },getActivity()
@@ -127,9 +137,20 @@ public class MainFragment extends Fragment {
         textViewTitle = rootView.findViewById(R.id.textViewTitle);
         recyclerView = rootView.findViewById(R.id.recycler_view);
         buttonCreateNote = rootView.findViewById(R.id.buttonCreateNote);
+        loadingPanelMain = rootView.findViewById(R.id.loadingPanelMain);
+
         // Configura la cola de solicitudes HTTP.
         queue = Volley.newRequestQueue(getActivity());
 
+    }
+    private void showLoader() {
+        isLoading = true;
+        loadingPanelMain.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoader() {
+        isLoading = false;
+        loadingPanelMain.setVisibility(View.GONE);
     }
 
     // Recupera argumentos pasados al fragmento, si existen
