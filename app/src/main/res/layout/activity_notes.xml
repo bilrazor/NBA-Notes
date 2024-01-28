@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="4dp"
+                android:paddingTop="5dp"
                 android:textSize="30dp"
                 android:hint="Titulo de la nota"
                 android:inputType="textMultiLine"
