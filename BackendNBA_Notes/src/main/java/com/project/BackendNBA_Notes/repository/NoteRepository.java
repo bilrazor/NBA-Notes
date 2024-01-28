@@ -17,5 +17,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     // Método para encontrar todas las notas favoritas de un usuario específico
     @Query("SELECT n FROM Note n WHERE n.user.id = :userId AND n.favorite = true")
     List<Note> findFavoritesByUserId(@Param("userId") Long userId);
-
+    @Query("SELECT n FROM Note n WHERE n.user.id = :userId AND n.title LIKE :title%")
+    List<Note> searchNotesByUserId(@Param("userId") Long userId, @Param("title") String title);
 }
