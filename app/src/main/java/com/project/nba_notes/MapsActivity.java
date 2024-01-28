@@ -1,5 +1,6 @@
 package com.project.nba_notes;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -8,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -18,6 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.nba_notes.databinding.ActivityMapsBinding;
 
@@ -69,12 +72,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Usa la lista de notas recibida y dibuja los marcadores en el mapa
         List<NotesData> notas = new ArrayList<NotesData>();
         for(int i = 0; i < notas.size(); i++){
-            LatLng coords = new LatLng(1,1);
-            mMap.addMarker(new MarkerOptions()
-                    .position(coords)
-                    .title(notas.get(i).getTitle())
-                    .icon(markerIcon));
+            initMarker(notas, markerIcon, i);
         }
+    }
+
+    private void initMarker(List<NotesData> notas, BitmapDescriptor markerIcon, int i){
+        LatLng coords = new LatLng(1,1);
+        MarkerOptions marker = new MarkerOptions()
+                .position(coords)
+                .title(notas.get(i).getTitle())
+                .icon(markerIcon);
+        mMap.addMarker(marker);
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+
+                return false;
+            }
+        });
     }
 
     private BitmapDescriptor vectorToBitmap(){
