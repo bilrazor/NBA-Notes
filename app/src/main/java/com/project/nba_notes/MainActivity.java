@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -177,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
 
             dialog.show();
+        } else if (id == R.id.menu_map) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
         }
         drawerLayout.closeDrawers();
 

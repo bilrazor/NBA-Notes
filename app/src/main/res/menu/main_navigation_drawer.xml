@@ -17,6 +17,9 @@
         <item
             android:id="@+id/menu_item_order"
             android:title="Ordenar notas"/>
+        <item
+            android:id="@+id/menu_map"
+            android:title="Mapa"/>
 
     </group>
 </menu>
