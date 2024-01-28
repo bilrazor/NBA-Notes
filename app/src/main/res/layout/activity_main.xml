@@ -86,7 +86,8 @@
                 android:layout_gravity="start"
                 android:fitsSystemWindows="true"
                 app:menu="@menu/main_navigation_drawer"
-                android:layout_marginRight="-65dp"/>
+                android:layout_marginRight="-65dp"
+                app:itemTextAppearance="@style/NavView"/>
 
         </androidx.drawerlayout.widget.DrawerLayout>
     </LinearLayout>
