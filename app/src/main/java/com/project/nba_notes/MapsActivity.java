@@ -4,6 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -11,6 +14,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,6 +28,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.nba_notes.databinding.ActivityMapsBinding;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +41,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private RequestQueue requestQueue;
     private Location lastKnownLocation;
     private FusedLocationProviderClient fusedLocationClient;
+    private BitmapDescriptor markerIcon;
+    private List<NotesData> notes;
+    private Context context = this;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,48 +59,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    @SuppressLint("PotentialBehaviorOverride")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        BitmapDescriptor markerIcon = vectorToBitmap();
+        markerIcon = vectorToBitmap();
 
-        // Add a marker and move the camera
+        // Move the camera
         LatLng coruna = new LatLng(43.3713, -8.396);
-        mMap.addMarker(new MarkerOptions()
-                .position(coruna).title("Marcador A Coruna")
-                .icon(markerIcon));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(coruna));
 
-        // Usa la lista de notas recibida y dibuja los marcadores en el mapa
-        List<NotesData> notas = new ArrayList<NotesData>();
-        for(int i = 0; i < notas.size(); i++){
-            initMarker(notas, markerIcon, i);
+        // Crea los marcadores de las notas en el mapa
+        for(int i = 0; i < notes.size(); i++){
+            NotesData note = notes.get(i);
+            initMarker(note);
         }
-    }
 
-    private void initMarker(List<NotesData> notas, BitmapDescriptor markerIcon, int i){
-        LatLng coords = new LatLng(1,1);
-        MarkerOptions marker = new MarkerOptions()
-                .position(coords)
-                .title(notas.get(i).getTitle())
-                .icon(markerIcon);
-        mMap.addMarker(marker);
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-
+                Intent intent = new Intent(MapsActivity.this, NotesActivity.class);
+                intent.putExtra("NOTE_ID", marker.getTitle());
+                startActivity(intent);
                 return false;
             }
         });
+    }
+
+    private void initMarker(NotesData note){
+        LatLng cords = note.getCords();
+        String title = String.valueOf(note.getId());
+        MarkerOptions marker = new MarkerOptions()
+                .position(cords)
+                .title(title)
+                .icon(markerIcon);
+        mMap.addMarker(marker);
+    }
+
+    private void getAllNotes(){
+        JsonArrayRequestWithAuthHeader2 jsonRequest = new JsonArrayRequestWithAuthHeader2(
+                Request.Method.GET,
+                "http://10.0.2.2:8000/api/auth/notes",
+                null,
+                response -> {
+                    for (int i = 0; i < response.length(); i++){
+                        try{
+                            JSONObject note = response.getJSONObject(i);
+                            notes.add(new NotesData(note));
+                        }catch (JSONException e){}
+                    }
+                },
+                error -> {
+
+                },
+                context
+        );
+        queue.add(jsonRequest);
     }
 
     private BitmapDescriptor vectorToBitmap(){
