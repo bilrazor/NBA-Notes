@@ -24,9 +24,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -85,119 +87,11 @@ public class NotesActivity extends AppCompatActivity {
         configureInitialButtonStates();
         // Configura los listeners para los botones y otros componentes interactivos.
         setupListeners();
-
-
-        // Agrega un TextWatcher a noteTitle para manejar cambios de texto.
-        noteTitle.addTextChangedListener(new TextWatcher() {
-            private String previousText = "";
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                previousText = s.toString(); // Guarda el texto anterior antes de que cambie.
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Este método se invoca cuando el texto cambia. En este caso, no es necesario implementar nada.
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (isLoadingData) {
-                    return; // Ignora los cambios si la actividad está cargando datos.
-                }
-                String newTitle = s.toString();
-                // Comprueba si el título ha cambiado y actualiza el estado de los botones y el helper de deshacer/rehacer.
-                if (!newTitle.equals(previousText)) {
-                    undoRedoHelper.onTextChanged(newTitle, noteContent.getText().toString(), noteTitle.getSelectionStart(), noteContent.getSelectionStart(), "title");
-                    previousText = newTitle;
-                }
-                updateUndoRedoButtonState();
-                checkIfTextFieldsAreEmpty();            }
-        });
-
-        // Similar al TextWatcher de noteTitle, este se aplica a noteContent.
-        noteContent.addTextChangedListener(new TextWatcher() {
-            private String previousText = "";
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                previousText = s.toString();
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // No se necesita implementar nada aquí
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (isLoadingData) {
-                    return; // Ignorar cambios mientras se está cargando datos
-                }
-                String newContent = s.toString();
-                if (!newContent.equals(previousText)) {
-                    String title = noteTitle.getText().toString();
-                    int titleCursorPosition = noteTitle.getSelectionStart();
-                    int contentCursorPosition = noteContent.getSelectionStart();
-                    // Aquí agregamos "content" como el último campo modificado
-                    undoRedoHelper.onTextChanged(title, newContent, titleCursorPosition, contentCursorPosition, "content");
-                    previousText = newContent;
-                }
-                updateUndoRedoButtonState();
-                checkIfTextFieldsAreEmpty();
-            }
-
-        });
-
-        // Configura el listener para el botón de deshacer.
-        buttonUndo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!undoRedoHelper.isUndoStackEmpty()) {
-                    NoteState previousState = undoRedoHelper.undo();
-                    noteTitle.setText(previousState.getTitle());
-                    noteContent.setText(previousState.getContent());
-
-                    if (previousState.getLastModifiedField().equals("title")) {
-                        noteTitle.requestFocus();
-                        noteTitle.setSelection(previousState.getTitleCursorPosition());
-                    } else {
-                        noteContent.requestFocus();
-                        noteContent.setSelection(previousState.getContentCursorPosition());
-                    }
-                }
-                updateUndoRedoButtonState();
-                checkIfTextFieldsAreEmpty();
-
-            }
-        });
-
-        // Configura el listener para el botón de rehacer.
-        buttonRedo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Verifica si la pila de rehacer no está vacía.
-                if (!undoRedoHelper.isRedoStackEmpty()) {
-                    // Obtiene el estado siguiente al cual rehacer.
-                    NoteState nextState = undoRedoHelper.redo();
-                    // Establece el título y contenido de la nota con los valores del estado rehacer.
-                    noteTitle.setText(nextState.getTitle());
-                    noteContent.setText(nextState.getContent());
-
-                    // Enfoca y posiciona el cursor en el campo editado más recientemente.
-                    if (nextState.getLastModifiedField().equals("title")) {
-                        noteTitle.requestFocus();
-                        noteTitle.setSelection(nextState.getTitleCursorPosition());
-                    } else {
-                        noteContent.requestFocus();
-                        noteContent.setSelection(nextState.getContentCursorPosition());
-                    }
-                }
-                // Actualiza el estado de los botones de deshacer y rehacer.
-                updateUndoRedoButtonState();
-            }
-        });
+        // Configura un Listener para los camios de texto
+        setupTextChangedListener();
+        // Configura un Listener para los botónes undo y redo
+        setupListenersUndoRedo();
+        // Configura un Listener para la localización
         startLocationUpdates();
     }
 
@@ -307,8 +201,7 @@ public class NotesActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         hideLoadingPanel(); // Oculta el spinner si hay un error
                         // Muestra un mensaje de error si la petición falla.
-                        Toast.makeText(context, "Error en la petición: " + error.toString(), Toast.LENGTH_LONG).show();
-                    }
+                        error(error);                    }
                 },
                 this // Pasa el contexto de la actividad.
         );
@@ -374,8 +267,7 @@ public class NotesActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // Manejo de errores de la petición.
                         hideLoadingPanel();
-                        Toast.makeText(context, "Error en la creación de la nota", Toast.LENGTH_SHORT).show();
-
+                        error(error);
                     }
                 },
                 this
@@ -400,8 +292,8 @@ public class NotesActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, "Error al eliminar la nota: " + error.toString(), Toast.LENGTH_LONG).show();
                         hideLoadingPanel();
+                        error(error);
                     }
                 },
                 this
@@ -453,8 +345,8 @@ public class NotesActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // Manejo de errores de la petición.
-                        Toast.makeText(context, "Error al actualizar la nota: " + error.toString(), Toast.LENGTH_LONG).show();
                         hideLoadingPanel();
+                        error(error);
                     }
                 },
                 this
@@ -666,6 +558,152 @@ public class NotesActivity extends AppCompatActivity {
             buttonNoteLetter.setImageResource(R.drawable.baseline_text_increase_24); // Cambia al ícono aA
         }
         isTextSizeIncreased = !isTextSizeIncreased;
+
+    }
+    private void setupTextChangedListener(){
+        // Agrega un TextWatcher a noteTitle para manejar cambios de texto.
+        noteTitle.addTextChangedListener(new TextWatcher() {
+            private String previousText = "";
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previousText = s.toString(); // Guarda el texto anterior antes de que cambie.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Este método se invoca cuando el texto cambia. En este caso, no es necesario implementar nada.
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isLoadingData) {
+                    return; // Ignora los cambios si la actividad está cargando datos.
+                }
+                String newTitle = s.toString();
+                // Comprueba si el título ha cambiado y actualiza el estado de los botones y el helper de deshacer/rehacer.
+                if (!newTitle.equals(previousText)) {
+                    undoRedoHelper.onTextChanged(newTitle, noteContent.getText().toString(), noteTitle.getSelectionStart(), noteContent.getSelectionStart(), "title");
+                    previousText = newTitle;
+                }
+                updateUndoRedoButtonState();
+                checkIfTextFieldsAreEmpty();            }
+        });
+
+        // Similar al TextWatcher de noteTitle, este se aplica a noteContent.
+        noteContent.addTextChangedListener(new TextWatcher() {
+            private String previousText = "";
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                previousText = s.toString();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No se necesita implementar nada aquí
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isLoadingData) {
+                    return; // Ignorar cambios mientras se está cargando datos
+                }
+                String newContent = s.toString();
+                if (!newContent.equals(previousText)) {
+                    String title = noteTitle.getText().toString();
+                    int titleCursorPosition = noteTitle.getSelectionStart();
+                    int contentCursorPosition = noteContent.getSelectionStart();
+                    // Aquí agregamos "content" como el último campo modificado
+                    undoRedoHelper.onTextChanged(title, newContent, titleCursorPosition, contentCursorPosition, "content");
+                    previousText = newContent;
+                }
+                updateUndoRedoButtonState();
+                checkIfTextFieldsAreEmpty();
+            }
+
+        });
+    }
+    private void setupListenersUndoRedo(){
+        // Configura el listener para el botón de deshacer.
+        buttonUndo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!undoRedoHelper.isUndoStackEmpty()) {
+                    NoteState previousState = undoRedoHelper.undo();
+                    noteTitle.setText(previousState.getTitle());
+                    noteContent.setText(previousState.getContent());
+
+                    if (previousState.getLastModifiedField().equals("title")) {
+                        noteTitle.requestFocus();
+                        noteTitle.setSelection(previousState.getTitleCursorPosition());
+                    } else {
+                        noteContent.requestFocus();
+                        noteContent.setSelection(previousState.getContentCursorPosition());
+                    }
+                }
+                updateUndoRedoButtonState();
+                checkIfTextFieldsAreEmpty();
+
+            }
+        });
+
+        // Configura el listener para el botón de rehacer.
+        buttonRedo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Verifica si la pila de rehacer no está vacía.
+                if (!undoRedoHelper.isRedoStackEmpty()) {
+                    // Obtiene el estado siguiente al cual rehacer.
+                    NoteState nextState = undoRedoHelper.redo();
+                    // Establece el título y contenido de la nota con los valores del estado rehacer.
+                    noteTitle.setText(nextState.getTitle());
+                    noteContent.setText(nextState.getContent());
+
+                    // Enfoca y posiciona el cursor en el campo editado más recientemente.
+                    if (nextState.getLastModifiedField().equals("title")) {
+                        noteTitle.requestFocus();
+                        noteTitle.setSelection(nextState.getTitleCursorPosition());
+                    } else {
+                        noteContent.requestFocus();
+                        noteContent.setSelection(nextState.getContentCursorPosition());
+                    }
+                }
+                // Actualiza el estado de los botones de deshacer y rehacer.
+                updateUndoRedoButtonState();
+            }
+        });
+    }
+    // Control de errores
+    public void error(VolleyError error){
+        String errorMessage = "Error desconocido";
+        if (error.networkResponse != null) {
+            switch (error.networkResponse.statusCode) {
+                case 404:
+                    errorMessage = "Recurso no encontrado";
+                    break;
+                case 500:
+                    errorMessage = "Error interno del servidor";
+                    break;
+                case 401:
+                case 403:
+                    errorMessage = "No autorizado o prohibido. Verifica tus permisos.";
+                    break;
+                case 204:
+                    errorMessage = "No hay contenido disponible.";
+                    break;
+                default:
+                    errorMessage = "Error en la petición: Código de estado HTTP " + error.networkResponse.statusCode;
+                    break;
+            }
+        } else if (error instanceof NoConnectionError) {
+            errorMessage = "Sin conexión a Internet.";
+        } else if (error instanceof TimeoutError) {
+            errorMessage = "Tiempo de espera agotado, por favor intente de nuevo.";
+        }
+
+        // Muestra un mensaje de error al usuario
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
 
     }
 }
