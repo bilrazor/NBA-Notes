@@ -499,8 +499,18 @@ public class NotesActivity extends AppCompatActivity {
     public void onBack() {
         onBackPressed = true;
         if (!buttonCheck.isEnabled()){
-            finish();
-
+            if (!isEmpty(noteTitle) && !isEmpty(noteContent)){
+                finish();
+                return;
+            }
+            if (isEmpty(noteTitle) && isEmpty(noteContent) && noteId != -1){
+                setNoteDelete();
+                return;
+            }
+            if(isEmpty(noteTitle) || isEmpty(noteContent) ){
+                finish();
+                return;
+            }
         }
         if (buttonCheck.isEnabled()){
             if(!isEmpty(noteTitle) && !isEmpty(noteContent)){
