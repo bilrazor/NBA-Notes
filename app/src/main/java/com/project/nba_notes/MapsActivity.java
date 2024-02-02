@@ -69,6 +69,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng coruna = new LatLng(43.3713, -8.396);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(coruna));
 
+        getAllNotes();
+
         // Crea los marcadores de las notas en el mapa
         for(int i = 0; i < notes.size(); i++){
             NotesData note = notes.get(i);
