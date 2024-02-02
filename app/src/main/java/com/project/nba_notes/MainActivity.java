@@ -30,64 +30,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        toolbar = findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
-
-        drawerLayout = findViewById(R.id.main_drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-            this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.main_navigation_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        fragmentContainer = findViewById(R.id.main_fragment_container);
-
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .setReorderingAllowed(true)
-//                    .add(R.id.main_fragment_container, ProfileFragment.class, null)
-//                    .commit();
-//        }
-    }
-
-    //metodo deprecado pero mas simple que la alternativa
-    @Override
-    public void onBackPressed(){
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }else{
-            super.onBackPressed();
-        }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        if (id == R.id.menu_item_start);
-            //transaction.replace(R.id.main_fragment_container, );
-        else if (id == R.id.menu_item_profile)
-            fragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, ProfileFragment.class, null)
-                .commit();
-        else if (id == R.id.menu_item_favourite);
-            //transaction.replace(R.id.main_fragment_container, );
-        else if (id == R.id.menu_item_order);
-            //MAIN FRAGMENT.SORTED(TRUE)
-
-        drawerLayout.closeDrawers();
-
         return false;
-    }
-
-    private void retrieveUserInfo(){
-        SharedPreferences prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
     }
 }

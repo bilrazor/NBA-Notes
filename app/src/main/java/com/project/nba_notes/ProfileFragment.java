@@ -30,8 +30,7 @@ public class ProfileFragment extends Fragment {
         TextView usernameTextView = (TextView) getView().findViewById(R.id.username_text_view);
         TextView emailTextView = (TextView) getView().findViewById(R.id.email_text_view);
         Button deleteAccountButton = (Button) getView().findViewById(R.id.delete_button);
-
-        // TODO: 12/01/2024 Cambiar name y key de las shared preferences por lo que corresponda
+        
         SharedPreferences prefs = this.getActivity().getSharedPreferences("USER_PREFERENCES", Context.MODE_PRIVATE);
         String username = prefs.getString("VALID_USERNAME", null);
         String email = prefs.getString("VALID_EMAIL", null);
