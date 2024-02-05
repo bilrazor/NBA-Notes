@@ -88,10 +88,9 @@ public class CalendarFragment extends Fragment {
                     }
 
                     if (titlesList.isEmpty()) {
-                        Toast.makeText(getContext(), "No hay notas para este día", Toast.LENGTH_SHORT).show();
-                    } else {
-                        notesAdapter.setNotesList(titlesList);
+                        titlesList.add("No hay notas para este día");
                     }
+                    notesAdapter.setNotesList(titlesList);
                 }
             }
         });
