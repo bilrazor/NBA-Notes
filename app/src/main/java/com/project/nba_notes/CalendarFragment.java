@@ -1,5 +1,7 @@
 package com.project.nba_notes;
 
+import static sun.bob.mcalendarview.utils.CalendarUtil.date;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,9 +28,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import sun.bob.mcalendarview.MCalendarView;
@@ -41,26 +39,25 @@ import sun.bob.mcalendarview.vo.DateData;
 public class CalendarFragment extends Fragment {
     private JSONArray notesArray;
     MCalendarView mcalendar;
-    RecyclerView recyclerView;
-    NotesAdapter notesAdapter;
+    TextView date_view;
 
+    // Declare RequestQueue as an instance variable in your class
     private RequestQueue requestQueue;
 
     public CalendarFragment() {
         super(R.layout.fragment_calendar);
     }
 
+    // Initialize the RequestQueue in onCreateView or onViewCreated
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
+        // Initialize the RequestQueue
         requestQueue = Volley.newRequestQueue(requireContext());
 
+        date_view = view.findViewById(R.id.date_view);
         mcalendar = view.findViewById(R.id.mcalendar);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        notesAdapter = new NotesAdapter(new ArrayList<>());
-        recyclerView.setAdapter(notesAdapter);
 
         getNotes();  // Call the method to get notes
 
@@ -69,28 +66,26 @@ public class CalendarFragment extends Fragment {
             public void onDateClick(View view, DateData date) {
                 if (notesArray != null) {
                     String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
-                    List<String> titlesList = new ArrayList<>();
+
+                    StringBuilder titlesStringBuilder = new StringBuilder();
 
                     for (int i = 0; i < notesArray.length(); i++) {
                         try {
                             JSONObject note = notesArray.getJSONObject(i);
                             String lastModified = note.getString("lastModified");
-                            String parsedDate = parseDate(lastModified);
+                            parseDate(lastModified);
 
-                            if (selectedDate.equals(parsedDate)) {
+                            if (selectedDate.equals(parseDate(lastModified))) {
                                 String title = note.getString("title");
-                                titlesList.add(title);
-                                Log.d("CalendarFragment", "Title: " + title + ", Date: " + parsedDate);
+                                titlesStringBuilder.append(title).append("\n");
+                                Log.d("CalendarFragment", "Title: " + title + ", Date: " + parseDate(lastModified));
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
 
-                    if (titlesList.isEmpty()) {
-                        titlesList.add("No hay notas para este día");
-                    }
-                    notesAdapter.setNotesList(titlesList);
+                    date_view.setText(titlesStringBuilder.toString().trim()); // Display all titles
                 }
             }
         });
@@ -99,34 +94,38 @@ public class CalendarFragment extends Fragment {
     }
 
     private void getNotes() {
-        JsonArrayRequest request = new JsonArrayRequest(
+        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
                 Request.Method.GET,
                 Server.name + "/api/auth/notes",
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        // Almacena las notas en la variable de instancia
                         notesArray = response;
                         try {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject note = response.getJSONObject(i);
                                 String lastModified = note.getString("lastModified");
                                 int year = Integer.parseInt(lastModified.substring(0, 4));
-                                int month = Integer.parseInt(lastModified.substring(5, 7));
-                                int day = Integer.parseInt(lastModified.substring(8, 10));
+                                int month = Integer.parseInt(lastModified.substring(5,7));
+                                int day = Integer.parseInt(lastModified.substring(8,10));
 
                                 mcalendar.setMarkedStyle(MarkStyle.BACKGROUND, Color.RED);
-                                mcalendar.markDate(year, month, day);
+                                mcalendar.markDate(year,month,day);
+
+
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
+                        error.printStackTrace();  // Imprimir detalles del error en la consola
 
                         if (error.networkResponse == null) {
                             Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_LONG).show();
@@ -140,21 +139,21 @@ public class CalendarFragment extends Fragment {
                             Toast.makeText(getContext(), serverCode, Toast.LENGTH_LONG).show();
                         }
                     }
-                }
+                },
+                getContext()
         );
 
+        // Add the request to the RequestQueue
         requestQueue.add(request);
     }
 
-    private String parseDate(String dateString) {
-        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        try {
-            Date date = isoFormat.parse(dateString);
-            SimpleDateFormat friendlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            return friendlyFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return "";
-        }
+    private String parseDate(String dateString) throws ParseException {
+        // Convertir la cadena de fecha a un objeto Date
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = isoFormat.parse(dateString);
+
+        // Formatear la fecha a un formato más amigable
+        SimpleDateFormat friendlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        return friendlyFormat.format(date);
     }
 }
