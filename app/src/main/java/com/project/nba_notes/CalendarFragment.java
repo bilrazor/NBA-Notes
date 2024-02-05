@@ -77,15 +77,20 @@ public class CalendarFragment extends Fragment {
 
                             if (selectedDate.equals(parseDate(lastModified))) {
                                 String title = note.getString("title");
-                                titlesStringBuilder.append(title).append("\n");
+                                titlesStringBuilder.append(title).append("\n\n");
                                 Log.d("CalendarFragment", "Title: " + title + ", Date: " + parseDate(lastModified));
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
+                        if (titlesStringBuilder.toString().equals("")){
+                            String message = "No hay notas que mostrar";
+                            date_view.setText(message);
+                        }else{
+                            date_view.setText(titlesStringBuilder.toString().trim()); // Display all titles
+                        }
 
-                    date_view.setText(titlesStringBuilder.toString().trim()); // Display all titles
                 }
             }
         });

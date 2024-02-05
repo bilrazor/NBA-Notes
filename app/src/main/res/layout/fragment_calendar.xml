@@ -4,23 +4,30 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/date_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
         android:layout_marginTop="40dp"
-        android:text="Elige la fecha"
-        android:textSize="25sp"
-        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/date_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="Elige la fecha"
+            android:textSize="25sp"
+            android:textStyle="bold"/>
+    </ScrollView>
 
     <sun.bob.mcalendarview.MCalendarView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:id="@+id/mcalendar"
-        app:layout_constraintTop_toBottomOf="@id/date_view"
+        app:layout_constraintTop_toBottomOf="@id/scroll_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
