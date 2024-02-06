@@ -179,14 +179,17 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         String receivedToken;
+                        String receivedEmail;
                         try {
                             receivedToken = response.getString("jwtToken");
+                            receivedEmail = response.getString("email");
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
                         SharedPreferences preferences = context.getSharedPreferences("MySharedPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("username", editTextUsername.getText().toString());
+                        editor.putString("email", receivedEmail);
                         editor.putString("token", receivedToken);
                         editor.commit();
                         finish();
