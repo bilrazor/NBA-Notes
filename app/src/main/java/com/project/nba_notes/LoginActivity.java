@@ -193,6 +193,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("token", receivedToken);
                         editor.commit();
                         finish();
+                        setContentView(R.layout.loading_screen);
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
 
