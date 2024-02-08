@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText editTextPassword;
     ImageButton showPassword;
     ProgressBar progressBar;
-    boolean isLogged;
+
     private Context context=this;
     private RequestQueue queue;
     @Override
@@ -191,7 +191,6 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        isLogged=true;
                         String receivedToken;
                         String receivedEmail;
                         try {
@@ -205,7 +204,6 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("username", editTextUsername.getText().toString());
                         editor.putString("email", receivedEmail);
                         editor.putString("token", receivedToken);
-                        editor.putString("isLogged", String.valueOf(isLogged));
                         editor.commit();
                         finish();
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -243,7 +241,6 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        isLogged=false;
                         if (error.networkResponse == null) {
                             Toast.makeText(context,"Error de conexión",Toast.LENGTH_LONG).show();
                         } else {
