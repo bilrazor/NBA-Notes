@@ -256,6 +256,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Toast.makeText(RegisterActivity.this,"Registro correcto", Toast.LENGTH_LONG).show();
                         finish();
+                        setContentView(R.layout.loading_screen);
                         Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
                         startActivity(intent);
                     }
