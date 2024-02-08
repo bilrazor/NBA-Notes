@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText editTextUsername;
     EditText editTextPassword;
     ImageButton showPassword;
+    ProgressBar progressBar;
     private Context context=this;
     private RequestQueue queue;
     @Override
@@ -54,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername=findViewById(R.id.user_text);
         editTextPassword=findViewById(R.id.password_text);
         showPassword=findViewById(R.id.show_password_button);
+        progressBar=findViewById(R.id.progressBar);
 
         Drawable drawable1 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.user_icon);
         Bitmap bitmap1 = ((BitmapDrawable) drawable1).getBitmap();
@@ -118,16 +121,25 @@ public class LoginActivity extends AppCompatActivity {
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Mostrar el ProgressBar
+                progressBar.setVisibility(View.VISIBLE);
+                logInButton.setEnabled(false);
 
-                if (editTextUsername.getText().toString().isEmpty()){
+                if (editTextUsername.getText().toString().isEmpty()) {
                     editTextUsername.setError("Este campo es obligatorio");
+                    logInButton.setEnabled(true);
+                    progressBar.setVisibility(View.GONE);
                 } if (editTextPassword.getText().toString().isEmpty()) {
                     editTextPassword.setError("Este campo es obligatorio");
-                }else{
+                    logInButton.setEnabled(true);
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    // Realizar la operación de inicio de sesión
                     sendPostLogin();
                 }
             }
         });
+
 
         showPassword.setOnClickListener(new View.OnClickListener() {
             boolean isImagenCambiada = false;
@@ -193,7 +205,6 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("token", receivedToken);
                         editor.commit();
                         finish();
-                        setContentView(R.layout.loading_screen);
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
 
@@ -220,7 +231,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         toast.show();
-
+                        progressBar.setVisibility(View.GONE);
+                        logInButton.setEnabled(true);
                     }
 
                 },
@@ -247,6 +259,8 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             Toast.makeText(LoginActivity.this,serverCode2,Toast.LENGTH_LONG).show();
                         }}
+                        progressBar.setVisibility(View.GONE);
+                        logInButton.setEnabled(true);
                     }
                 }
         );
