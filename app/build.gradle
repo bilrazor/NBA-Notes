@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.project.nba_notes'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.project.nba_notes"
