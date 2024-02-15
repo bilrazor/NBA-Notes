@@ -45,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText editTextPassword;
     ImageButton showPassword;
     ProgressBar progressBar;
+    String color_blue="#0020FF", color_orange="#FF7800";
+    String text_login= "Iniciar sesión";
 
     private Context context=this;
     private RequestQueue queue;
@@ -135,6 +137,9 @@ public class LoginActivity extends AppCompatActivity {
                     logInButton.setEnabled(true);
                     progressBar.setVisibility(View.GONE);
                 } else {
+                    logInButton.setText("");
+                    editTextPassword.setEnabled(false);
+                    editTextUsername.setEnabled(false);
                     // Realizar la operación de inicio de sesión
                     sendPostLogin();
                 }
@@ -217,12 +222,12 @@ public class LoginActivity extends AppCompatActivity {
                         TextView toastMessage = view.findViewById(android.R.id.message);
 
                         // Cambia el color del texto
-                        toastMessage.setTextColor(Color.parseColor("#0020FF"));
+                        toastMessage.setTextColor(Color.parseColor(color_blue));
 
                         // Crea un nuevo drawable para el fondo
                         GradientDrawable gd = new GradientDrawable();
                         // Cambia el color de fondo
-                        gd.setColor(Color.parseColor("#FF7800"));
+                        gd.setColor(Color.parseColor(color_orange));
 
                         // Aplica el drawable como fondo
                         view.setBackground(gd);
@@ -232,8 +237,11 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         toast.show();
-                        progressBar.setVisibility(View.GONE);
-                        logInButton.setEnabled(true);
+                        logInButton.setText(text_login);
+                        editTextPassword.setEnabled(true);
+                        editTextUsername.setEnabled(true);
+
+
                     }
 
                 },
@@ -261,12 +269,21 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this,serverCode2,Toast.LENGTH_LONG).show();
                         }}
                         progressBar.setVisibility(View.GONE);
-                        logInButton.setEnabled(true);
+                        setElementsEnabled(true);
+                        logInButton.setText(text_login);
+
                     }
                 }
         );
         this.queue.add(request);
     }
+
+    private void setElementsEnabled(boolean enabled) {
+        logInButton.setEnabled(enabled);
+        editTextUsername.setEnabled(enabled);
+        editTextPassword.setEnabled(enabled);
+    }
+
 
 
 }
