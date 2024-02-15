@@ -2,12 +2,15 @@ package com.project.nba_notes;
 
 import static sun.bob.mcalendarview.utils.CalendarUtil.date;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,9 +42,11 @@ import sun.bob.mcalendarview.vo.DateData;
 public class CalendarFragment extends Fragment {
     private JSONArray notesArray;
     MCalendarView mcalendar;
-    TextView date_view;
-
+    LinearLayout layout;
+    TextView chooseDateTextView;
     private RequestQueue queue;
+    String color_orange= "#FF7800";
+    String color_blue= "#0020FF";
 
     public CalendarFragment() {
         super(R.layout.fragment_calendar);
@@ -54,44 +59,71 @@ public class CalendarFragment extends Fragment {
         // Inicializar la RequestQueue
         queue = Volley.newRequestQueue(requireContext());
 
-        date_view = view.findViewById(R.id.date_view);
+        //date_view = view.findViewById(R.id.date_view);
         mcalendar = view.findViewById(R.id.mcalendar);
+        layout = view.findViewById(R.id.notes_layout);
+        chooseDateTextView = view.findViewById(R.id.choose_date_text_view);
+
 
         getNotes();  // Llama al método getNotes()
 
         mcalendar.setOnDateClickListener(new OnDateClickListener() {
             @Override
             public void onDateClick(View view, DateData date) {
+                // Oculta el TextView al elegir una fecha
+                chooseDateTextView.setVisibility(View.GONE);
                 if (notesArray != null) {
                     String selectedDate = date.getYear() + "-" + date.getMonthString() + "-" + date.getDayString();
+                    layout.removeAllViews(); // Limpiar vistas anteriores
 
-                    StringBuilder titlesStringBuilder = new StringBuilder();
 
                     for (int i = 0; i < notesArray.length(); i++) {
                         try {
                             JSONObject note = notesArray.getJSONObject(i);
                             String lastModified = note.getString("lastModified");
-                            parseDate(lastModified);
+                            String noteDate = parseDate(lastModified);
 
-                            if (selectedDate.equals(parseDate(lastModified))) {
+                            if (selectedDate.equals(noteDate)) {
                                 String title = note.getString("title");
-                                titlesStringBuilder.append(title).append("\n\n");
-                                Log.d("CalendarFragment", "Title: " + title + ", Date: " + parseDate(lastModified));
+                                int id= note.getInt("id");
+
+                                TextView noteTextView = new TextView(getContext());
+                                noteTextView.setText(title);
+                                noteTextView.setTextColor(Color.parseColor(color_blue));
+                                noteTextView.setTextSize(25);
+                                noteTextView.setGravity(Gravity.CENTER);
+                                noteTextView.setClickable(true);
+                                noteTextView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        // Aquí abres la nueva actividad para mostrar los detalles de la nota seleccionada
+                                        // Debes pasar los datos relevantes a la nueva actividad, como el título de la nota, etc.
+                                        Intent intent = new Intent(getActivity(), NotesActivity.class);
+                                        intent.putExtra("id", id); // Puedes agregar más datos según sea necesario
+                                        startActivity(intent);
+                                    }
+                                });
+
+                                layout.addView(noteTextView); // Agregar TextView dinámicamente al diseño
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                        if (titlesStringBuilder.toString().equals("")){
-                            String message = "No hay notas que mostrar";
-                            date_view.setText(message);
-                        }else{
-                            date_view.setText(titlesStringBuilder.toString().trim()); // Display all titles
-                        }
 
+                    if (layout.getChildCount() == 0) {
+                        String message = "No hay notas que mostrar";
+                        TextView noNotesTextView = new TextView(getContext());
+                        noNotesTextView.setText(message);
+                        noNotesTextView.setTextSize(30);
+                        noNotesTextView.setTextColor(Color.parseColor(color_orange));
+                        noNotesTextView.setGravity(Gravity.CENTER);
+                        layout.addView(noNotesTextView); // Agregar mensaje si no hay notas
+                    }
                 }
             }
         });
+
 
         return view;
     }
