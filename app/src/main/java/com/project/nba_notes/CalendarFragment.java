@@ -41,25 +41,23 @@ public class CalendarFragment extends Fragment {
     MCalendarView mcalendar;
     TextView date_view;
 
-    // Declare RequestQueue as an instance variable in your class
-    private RequestQueue requestQueue;
+    private RequestQueue queue;
 
     public CalendarFragment() {
         super(R.layout.fragment_calendar);
     }
 
-    // Initialize the RequestQueue in onCreateView or onViewCreated
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-        // Initialize the RequestQueue
-        requestQueue = Volley.newRequestQueue(requireContext());
+        // Inicializar la RequestQueue
+        queue = Volley.newRequestQueue(requireContext());
 
         date_view = view.findViewById(R.id.date_view);
         mcalendar = view.findViewById(R.id.mcalendar);
 
-        getNotes();  // Call the method to get notes
+        getNotes();  // Llama al método getNotes()
 
         mcalendar.setOnDateClickListener(new OnDateClickListener() {
             @Override
@@ -148,8 +146,8 @@ public class CalendarFragment extends Fragment {
                 getContext()
         );
 
-        // Add the request to the RequestQueue
-        requestQueue.add(request);
+        // Añadir la petición a la RequestQueue (cola de peticiones)
+        queue.add(request);
     }
 
     private String parseDate(String dateString) throws ParseException {
@@ -157,7 +155,7 @@ public class CalendarFragment extends Fragment {
         SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date date = isoFormat.parse(dateString);
 
-        // Formatear la fecha a un formato más amigable
+        // Formatear la fecha a un formato más "amigable"
         SimpleDateFormat friendlyFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return friendlyFormat.format(date);
     }
