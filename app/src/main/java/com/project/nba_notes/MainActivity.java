@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageButton themeSwapButton;
     private ImageButton logoutButton;
     private List<NotesData> allTheNotes;
+    private TextView mainTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus) mainTitle.setVisibility(View.GONE);
+                if(!hasFocus) mainTitle.setVisibility(View.VISIBLE);
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -103,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentContainer = findViewById(R.id.main_fragment_container);
         drawerLayout = findViewById(R.id.main_drawer_layout);
         toolbar = findViewById(R.id.main_toolbar);
+        mainTitle = findViewById(R.id.main_title_text);
 
         searchView = findViewById(R.id.search_view);
         searchView.setMaxWidth(android.R.attr.width);

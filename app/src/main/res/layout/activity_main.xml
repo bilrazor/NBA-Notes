@@ -25,46 +25,57 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/main_title_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NBA Notes"
                     android:textSize="22sp"
-                    android:layout_marginTop="14dp"/>
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-                <SearchView
+                <android.widget.SearchView
                     android:id="@+id/search_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginTop="8dp" />
+                    app:layout_constraintRight_toLeftOf="@+id/theme_swap_button"
+
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <ImageButton
                     android:id="@+id/theme_swap_button"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/theme_swap_button"
-                    android:clickable="true"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginTop="18dp"
-                    android:focusable="true"
-                    android:background="?android:selectableItemBackground"/>
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:layout_marginRight="10dp"
+                    app:layout_constraintRight_toLeftOf="@+id/logout_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    />
 
                 <ImageButton
                     android:id="@+id/logout_button"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:background="@drawable/baseline_logout_24"
-                    android:clickable="true"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/baseline_logout_24"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:minHeight="24dp"
                     android:minWidth="24dp"
                     android:scaleType="fitXY"
                     android:focusable="true"
+                    android:layout_marginRight="10dp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     />
-
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
         </com.google.android.material.appbar.MaterialToolbar>
