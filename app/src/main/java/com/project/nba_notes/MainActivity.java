@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentContainerView;
@@ -30,6 +31,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -53,11 +55,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageButton logoutButton;
     private List<NotesData> allTheNotes;
     private TextView mainTitle;
+    private boolean nightMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        queue = Volley.newRequestQueue(this);
 
         initUI();
         initToolbar();
@@ -65,7 +70,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         themeSwapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (nightMode){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    nightMode = false;
+                }else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    nightMode = true;
+                }
             }
         });
 
@@ -87,6 +98,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
+
+
+        // Cambiar colores searchview
+//        SearchView searchView = findViewById(R.id.search_view);
+//        int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
+//        // Cambia el color del icono de búsqueda
+//        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
+//        searchIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+//
+//        // Cambia el color del Texto
+//        int searchTextId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
+//        EditText searchText = (EditText) searchView.findViewById(searchTextId);
+//        searchText.setHintTextColor(Color.BLACK);
+//        searchText.setTextColor(Color.BLACK);
+//
+//        // Cambia el color del icono de cerrar/limpiar
+//        int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
+//        ImageView closeButton = (ImageView) searchView.findViewById(closeButtonId);
+//        closeButton.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
@@ -137,23 +167,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.menu_item_start) {
-//            Bundle args = new Bundle();
-//            args.putString("CATEGORY", "todas");
+            Bundle args = new Bundle();
+            args.putString("CATEGORY", "todas");
 //
 //            fragmentManager.beginTransaction()
-//                    .add(R.id.main_fragment_container, MainFragment.class, args)
+//                    .replace(R.id.main_fragment_container, MainFragment.class, args)
 //                    .commit();
         }
-        else if (id == R.id.menu_item_profile)
-            fragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, ProfileFragment.class, null)
-                .commit();
+        else if (id == R.id.menu_item_profile) {
+//            fragmentManager.beginTransaction()
+//                    .replace(R.id.main_fragment_container, ProfileFragment.class, null)
+//                    .commit();
+        }
         else if (id == R.id.menu_item_favourite){
 //            Bundle args = new Bundle();
 //            args.putString("CATEGORY", "favorite");
 //
 //            fragmentManager.beginTransaction()
-//                    .add(R.id.main_fragment_container, MainFragment.class, args)
+//                    .replace(R.id.main_fragment_container, MainFragment.class, args)
 //                    .commit();
         }
         else if (id == R.id.menu_item_order) {

@@ -1,6 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="NBA_notes.Dark" parent="Theme.AppCompat.NoActionBar">
+    <style name="NBA_Notes_Theme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
     </style>
+
+    <style name="ImgButtonStyle">
+        <item name="android:tint">@color/white</item>
+    </style>
+
+    <style name="TextStyle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>
