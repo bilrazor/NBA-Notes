@@ -12,12 +12,14 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageButton logoutButton;
     private List<NotesData> allTheNotes;
     private TextView mainTitle;
-    private boolean nightMode = false;
+    private boolean nightMode = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initUI();
         initToolbar();
+
+        Bundle args = new Bundle();
+        args.putString("CATEGORY", "todas");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, MainFragment.class, args)
+                .commit();
 
         themeSwapButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,25 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
-
-
-        // Cambiar colores searchview
-//        SearchView searchView = findViewById(R.id.search_view);
-//        int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
-//        // Cambia el color del icono de búsqueda
-//        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
-//        searchIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-//
-//        // Cambia el color del Texto
-//        int searchTextId = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-//        EditText searchText = (EditText) searchView.findViewById(searchTextId);
-//        searchText.setHintTextColor(Color.BLACK);
-//        searchText.setTextColor(Color.BLACK);
-//
-//        // Cambia el color del icono de cerrar/limpiar
-//        int closeButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
-//        ImageView closeButton = (ImageView) searchView.findViewById(closeButtonId);
-//        closeButton.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
@@ -169,23 +159,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.menu_item_start) {
             Bundle args = new Bundle();
             args.putString("CATEGORY", "todas");
-//
-//            fragmentManager.beginTransaction()
-//                    .replace(R.id.main_fragment_container, MainFragment.class, args)
-//                    .commit();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, MainFragment.class, args)
+                    .commit();
         }
         else if (id == R.id.menu_item_profile) {
-//            fragmentManager.beginTransaction()
-//                    .replace(R.id.main_fragment_container, ProfileFragment.class, null)
-//                    .commit();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, ProfileFragment.class, null)
+                    .commit();
         }
         else if (id == R.id.menu_item_favourite){
-//            Bundle args = new Bundle();
-//            args.putString("CATEGORY", "favorite");
-//
-//            fragmentManager.beginTransaction()
-//                    .replace(R.id.main_fragment_container, MainFragment.class, args)
-//                    .commit();
+            Bundle args = new Bundle();
+            args.putString("CATEGORY", "favorite");
+
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, MainFragment.class, args)
+                    .commit();
         }
         else if (id == R.id.menu_item_order) {
             LayoutInflater inflater = getLayoutInflater();
@@ -208,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (descRadioButton.isChecked()) {
                         frag.sortNotes(false);
                     }
-                    
+
                     if (ascRadioButton.isChecked()) {
                         frag.sortNotes(true);
                     }

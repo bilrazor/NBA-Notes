@@ -59,8 +59,7 @@
                     style="@style/ImgButtonStyle"
                     app:layout_constraintRight_toLeftOf="@+id/logout_button"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    />
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
                 <ImageButton
                     android:id="@+id/logout_button"
