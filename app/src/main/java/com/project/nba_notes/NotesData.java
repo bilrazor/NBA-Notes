@@ -1,5 +1,6 @@
 package com.project.nba_notes;
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,10 +12,12 @@ import java.util.TimeZone;
 
 public class NotesData {
     private int id;
+
     private String title;
     private String content;
     private boolean favorite;
     private Date lastModified;
+
 
     public NotesData(int id, String title, String content, boolean favorite, Date lastModified) {
         this.id = id;
@@ -53,6 +56,7 @@ public class NotesData {
         this.id = id;
     }
 
+
     public String getTitle() {
         return title;
     }
@@ -84,4 +88,6 @@ public class NotesData {
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
+
 }
+
