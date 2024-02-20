@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
+
     <style name="NBA_notes.Light" parent="Theme.AppCompat.Light.NoActionBar">
 
     </style>
@@ -7,4 +8,17 @@
     <style name="NBA_notes.Dark" parent="Theme.AppCompat.NoActionBar">
 
     </style>
+
+    <style name="Base.Theme.NBA_notes" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="collapsedSize">@color/collapsedSize</item>
+        <item name="colorOnBackground">@color/colorOnBackground</item>
+        <item name="collapsedSize">@color/collapsedSize</item>
+    </style>
+
+
+    <style name="Theme.NBA_notes" parent="Base.Theme.NBA_notes" />
+
 </resources>
