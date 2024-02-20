@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<NotesData> allTheNotes;
     private TextView mainTitle;
     private boolean nightMode = true;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initUI();
         initToolbar();
+        retrieveUserInfo();
 
         Bundle args = new Bundle();
         args.putString("CATEGORY", "todas");
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchRequest = (String) searchView.getQuery();
+                sendFilterQuery();
                 return false;
             }
             @Override
@@ -214,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void retrieveUserInfo(){
-        SharedPreferences prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
     }
 
     private void sendFilterQuery(){
