@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView mainTitle;
     private boolean nightMode = true;
     private SharedPreferences prefs;
+    private MainFragment mainFragment;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Bundle args = new Bundle();
         args.putString("CATEGORY", "todas");
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        mainFragment = new MainFragment();
+        fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.main_fragment_container, MainFragment.class, args)
                 .commit();
@@ -105,15 +108,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public boolean onQueryTextSubmit(String query) {
                 searchRequest = (String) searchView.getQuery();
 
-//                Bundle searchBundle = new Bundle();
-//                searchBundle.putString("TERMINO_BUSQUEDA", searchRequest);
+                MainFragment frag = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+                realizarFiltrado(searchRequest);
 
-                Fragment mainFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-//                mainFragment.realizarFiltrado(searchRequest);
-//                FragmentManager fragManager = getSupportFragmentManager();
-//                fragManager.beginTransaction()
-//                        .replace(R.id.main_fragment_container, MainFragment.class, searchBundle)
-//                        .commit();
                 return false;
             }
             @Override
@@ -168,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.menu_item_start) {
             Bundle args = new Bundle();
@@ -206,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             okButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MainFragment frag = new MainFragment();
+                    MainFragment frag = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
 
                     if (descRadioButton.isChecked()) {
                         frag.sortNotes(false);
