@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -102,7 +104,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchRequest = (String) searchView.getQuery();
-                sendFilterQuery();
+
+//                Bundle searchBundle = new Bundle();
+//                searchBundle.putString("TERMINO_BUSQUEDA", searchRequest);
+
+                Fragment mainFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
+//                mainFragment.realizarFiltrado(searchRequest);
+//                FragmentManager fragManager = getSupportFragmentManager();
+//                fragManager.beginTransaction()
+//                        .replace(R.id.main_fragment_container, MainFragment.class, searchBundle)
+//                        .commit();
                 return false;
             }
             @Override
@@ -210,6 +221,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
 
             dialog.show();
+        } else if (id == R.id.menu_map) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            this.startActivity(intent);
         }
         drawerLayout.closeDrawers();
 
@@ -220,30 +234,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
     }
 
-    private void sendFilterQuery(){
-        allTheNotes.clear();
-
-        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
-                Request.Method.GET,
-                "http://10.0.2.2:8000/api/auth/title?title=" + searchRequest,
-                null,
-                response -> {
-                    for(int i = 0; i < response.length(); i++){
-                        try{
-                            JSONObject note = response.getJSONObject(i);
-                            NotesData data = new NotesData(note);
-                            allTheNotes.add(data);
-                        }catch (JSONException e){}
-                    }
-                    //
-                    //
-                    //
-                },
-                error -> {
-
-                },
-                context
-        );
-        queue.add(request);
-    }
+//    private void sendFilterQuery(){
+//        allTheNotes.clear();
+//
+//        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
+//                Request.Method.GET,
+//                "http://10.0.2.2:8000/api/auth/title?title=" + searchRequest,
+//                null,
+//                response -> {
+//                    for(int i = 0; i < response.length(); i++){
+//                        try{
+//                            JSONObject note = response.getJSONObject(i);
+//                            NotesData data = new NotesData(note);
+//                            allTheNotes.add(data);
+//                        }catch (JSONException e){}
+//                    }
+//                    //
+//                    //
+//                    //
+//                },
+//                error -> {
+//
+//                },
+//                context
+//        );
+//        queue.add(request);
+//    }
 }
