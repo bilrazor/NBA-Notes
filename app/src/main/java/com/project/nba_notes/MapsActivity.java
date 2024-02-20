@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -53,6 +54,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        queue = Volley.newRequestQueue(this);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -83,6 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Intent intent = new Intent(MapsActivity.this, NotesActivity.class);
                 intent.putExtra("NOTE_ID", marker.getTitle());
                 startActivity(intent);
+                finish();
                 return false;
             }
         });
@@ -99,6 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void getAllNotes(){
+        notes = new ArrayList<>();
         JsonArrayRequestWithAuthHeader2 jsonRequest = new JsonArrayRequestWithAuthHeader2(
                 Request.Method.GET,
                 "http://10.0.2.2:8000/api/auth/notes",
