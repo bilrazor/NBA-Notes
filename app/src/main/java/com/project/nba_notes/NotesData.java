@@ -1,18 +1,61 @@
 package com.project.nba_notes;
 
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
-
+import java.util.TimeZone;
 
 public class NotesData {
+    private int id;
+
     private String title;
     private String content;
     private boolean favorite;
     private Date lastModified;
+
+
+    public NotesData(int id, String title, String content, boolean favorite, Date lastModified) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.favorite = favorite;
+        this.lastModified = lastModified;
+    }
+    public NotesData(JSONObject robot) {
+        try {
+            this.id = robot.getInt("id");
+            this.title = robot.getString("title");
+            this.content = robot.getString("content");
+            this.favorite = robot.getBoolean("favorite");
+            String dateString = robot.getString("lastModified");
+
+            // Quitar los microsegundos de la cadena de fecha y asumir que es UTC añadiendo 'Z'
+            String modifiedDateString = dateString.substring(0, dateString.length() - 3) + "Z";
+
+            // Configurar SimpleDateFormat para manejar la fecha en formato ISO 8601
+            SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            isoFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Asegúrate de que el objeto Date esté en UTC
+
+            this.lastModified = isoFormat.parse(modifiedDateString);
+
+        } catch (JSONException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     public String getTitle() {
         return title;
@@ -45,4 +88,6 @@ public class NotesData {
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
+
 }
+
