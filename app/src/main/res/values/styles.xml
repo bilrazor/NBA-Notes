@@ -1,0 +1,5 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="NavView">
+        <item name="android:textSize">24dp</item>
+    </style>
+</resources>

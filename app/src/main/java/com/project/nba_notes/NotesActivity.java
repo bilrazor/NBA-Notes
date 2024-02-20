@@ -706,6 +706,7 @@ public class NotesActivity extends AppCompatActivity {
         Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
 
     }
+
 }
 /*# NBA Notes - Aplicación Móvil
 ![Logo NBA Notes](https://github.com/bilrazor/NBA-Notes/assets/113417155/a1d48f80-152e-44a9-81cd-a14ba05d31f1)

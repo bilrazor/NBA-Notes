@@ -1,6 +1,9 @@
 package com.project.nba_notes;
 
 
+import com.google.android.gms.maps.model.LatLng;
+
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,19 +15,25 @@ import java.util.TimeZone;
 
 public class NotesData {
     private int id;
-
     private String title;
     private String content;
     private boolean favorite;
     private Date lastModified;
 
+    private double latitude;
+    private double longitude;
 
-    public NotesData(int id, String title, String content, boolean favorite, Date lastModified) {
+    public NotesData(int id, String title, String content, boolean favorite, Date lastModified, double longitude, double latitude) {
+
         this.id = id;
         this.title = title;
         this.content = content;
         this.favorite = favorite;
         this.lastModified = lastModified;
+
+        this.latitude = latitude;
+        this.longitude = longitude;
+
     }
     public NotesData(JSONObject robot) {
         try {
@@ -89,5 +98,15 @@ public class NotesData {
         this.lastModified = lastModified;
     }
 
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public LatLng getCords(){ return new LatLng(this.latitude, this.longitude); }
 }
 
