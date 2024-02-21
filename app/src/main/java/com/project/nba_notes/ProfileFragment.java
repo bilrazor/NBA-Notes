@@ -1,6 +1,7 @@
 package com.project.nba_notes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Display;
@@ -34,7 +35,7 @@ public class ProfileFragment extends Fragment {
         TextView emailTextView = (TextView) getView().findViewById(R.id.email_text_view);
         Button deleteAccountButton = (Button) getView().findViewById(R.id.delete_button);
         queue = Volley.newRequestQueue(getContext());
-        
+
         SharedPreferences prefs = this.getActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
         String username = prefs.getString("username", null);
         String email = prefs.getString("email", null);
@@ -53,31 +54,22 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void deleteAccount(){
-        JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
+    private void deleteAccount() {
+        SharedPreferences prefs = this.getActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        StringRequestWithAuthHeader request = new StringRequestWithAuthHeader(
                 Request.Method.DELETE,
-                Server.name + "/api/auth/notes",
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Toast.makeText(
-                                getContext(),
-                                "Usuario borrado con exito",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
+                Server.name + "/api/auth/delete",
+                response -> {
+                    Toast.makeText(getContext(), "Usuario eliminado", Toast.LENGTH_SHORT).show();
+                    prefs.edit()
+                            .remove("username")
+                            .remove("email")
+                            .remove("token")
+                            .apply();
+                    Intent intent = new Intent(getContext(), LoginActivity.class);
+                    startActivity(intent);
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(
-                                getContext(),
-                                "Estado de respuesta: " + error.networkResponse.statusCode,
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                },
+                error -> Toast.makeText(getContext(), "Error desconocido", Toast.LENGTH_LONG).show(),
                 getContext()
         );
         queue.add(request);
