@@ -68,4 +68,3 @@ noteDTO.setLatitude(note.getLatitude());
 
  */
 
-
