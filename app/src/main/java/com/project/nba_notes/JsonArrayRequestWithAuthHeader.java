@@ -1,6 +1,7 @@
 package com.project.nba_notes;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
@@ -29,9 +30,9 @@ public class JsonArrayRequestWithAuthHeader extends JsonArrayRequest {
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<>();
         // Recupera el token de SharedPreferences o de donde sea apropiado
-        //SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
-        //String token = sharedPreferences.getString("token", ""); // Usar el token guardado en SharedPreferences
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA5MTExNzYyLCJpYXQiOjE3MDg1MTE3NjJ9.2ZemmJCSqbmMbgy0QqWqhYoFDfH8xmOqZ5mbDcNzxfRwmcOLSCIdKqIpV-A1i6DCLzbu3nhN8Teiw2bFIazDNA";
+        SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", ""); // Usar el token guardado en SharedPreferences
+        //String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA5MTExNzYyLCJpYXQiOjE3MDg1MTE3NjJ9.2ZemmJCSqbmMbgy0QqWqhYoFDfH8xmOqZ5mbDcNzxfRwmcOLSCIdKqIpV-A1i6DCLzbu3nhN8Teiw2bFIazDNA";
         headers.put("Authorization","Bearer " + token);
         return headers;
     }

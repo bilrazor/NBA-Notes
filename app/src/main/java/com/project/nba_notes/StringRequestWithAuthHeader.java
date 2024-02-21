@@ -26,9 +26,9 @@ public class StringRequestWithAuthHeader extends StringRequest {
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<>();
         // Recupera el token de SharedPreferences o de donde lo tengas almacenado
-        //SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
-       // String token = sharedPreferences.getString("token", ""); // Asegúrate de descomentar esta línea y manejar la obtención del token correctamente
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA5MTExNzYyLCJpYXQiOjE3MDg1MTE3NjJ9.2ZemmJCSqbmMbgy0QqWqhYoFDfH8xmOqZ5mbDcNzxfRwmcOLSCIdKqIpV-A1i6DCLzbu3nhN8Teiw2bFIazDNA";
+        SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", ""); // Asegúrate de descomentar esta línea y manejar la obtención del token correctamente
+        //String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwZXBlIiwiZXhwIjoxNzA5MTExNzYyLCJpYXQiOjE3MDg1MTE3NjJ9.2ZemmJCSqbmMbgy0QqWqhYoFDfH8xmOqZ5mbDcNzxfRwmcOLSCIdKqIpV-A1i6DCLzbu3nhN8Teiw2bFIazDNA";
 
         headers.put("Authorization", "Bearer " + token);
         return headers;
