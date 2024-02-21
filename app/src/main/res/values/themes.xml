@@ -1,9 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
-    <style name="Base.Theme.NBA_notes" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <style name="NBA_Notes_Theme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#26A2FF</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ImgButtonStyle">
+        <item name="android:tint">@color/black</item>
+    </style>
+
+    <style name="Base.Theme.NBA_notes" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="collapsedSize">@color/collapsedSize</item>
+        <item name="colorOnBackground">@color/colorOnBackground</item>
+
+    </style>
+
+
     <style name="Theme.NBA_notes" parent="Base.Theme.NBA_notes" />
+    <style name="TextStyle">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

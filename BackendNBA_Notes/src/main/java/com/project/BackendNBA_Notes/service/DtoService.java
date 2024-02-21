@@ -9,10 +9,12 @@ public class DtoService {
     public NoteDTO convertToDTO(Note note) {
         NoteDTO noteDTO = new NoteDTO();
         noteDTO.setId(note.getId());
+        noteDTO.setTitle(note.getTitle());
         noteDTO.setContent(note.getContent());
         noteDTO.setFavorite(note.isFavorite());
         noteDTO.setLastModified(note.getLastModified());
-
+        noteDTO.setLatitude(note.getLatitude());
+        noteDTO.setLongitude(note.getLongitude());
         return noteDTO;
     }
 }

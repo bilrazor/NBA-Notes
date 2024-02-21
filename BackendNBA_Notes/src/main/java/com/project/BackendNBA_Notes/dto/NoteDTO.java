@@ -13,5 +13,7 @@ public class NoteDTO {
     private String content;
     private boolean favorite;
     private LocalDateTime lastModified;
+    private Double latitude;
+    private Double longitude;
     // Getter y setters
 }
