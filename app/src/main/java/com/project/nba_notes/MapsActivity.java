@@ -119,7 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 },
                 error -> {
-
+                    Toast.makeText(this, "Error al cargar datos",Toast.LENGTH_LONG).show();
                 },
                 context
         );
