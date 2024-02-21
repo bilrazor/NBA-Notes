@@ -6,5 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+<<<<<<< HEAD
+=======
+
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- Aquí se insertará el fragmento -->
+    </FrameLayout>
+
+>>>>>>> main
 
 </androidx.constraintlayout.widget.ConstraintLayout>
