@@ -61,6 +61,8 @@ public class NotesActivity extends AppCompatActivity {
     private boolean isTextSizeIncreased = false;
     private UndoRedoHelper undoRedoHelper = new UndoRedoHelper();
     private boolean isLoadingData = false;
+    private String initialTitle = "";
+    private String initialContent = "";
     private int noteId = -1;
     private RequestQueue queue;
     private RelativeLayout loadingPanel;
@@ -175,7 +177,7 @@ public class NotesActivity extends AppCompatActivity {
                             noteFavorite = response.getBoolean("favorite");
 
                             buttonFavorite.setImageResource(noteFavorite ? R.drawable.baseline_star_24 : R.drawable.baseline_star_border_24);
-
+                            setInitialText(title,content);
                             noteTitle.setText(title);
                             noteDate.setText(parseDate(dateString));
                             noteContent.setText(content);
@@ -354,14 +356,22 @@ public class NotesActivity extends AppCompatActivity {
         // Añade la petición a la cola y la ejecuta.
         queue.add(request);
     }
+    // Este método se llama después de cargar los datos en obtainNote()
+    private void setInitialText(String title, String content) {
+        initialTitle = title;
+        initialContent = content;
+    }
     // Revisa si alguno de los campos de texto (título o contenido de la nota) no está vacío.
-    private void checkIfTextFieldsAreEmpty() {
-        String title = noteTitle.getText().toString();
-        String content = noteContent.getText().toString();
-        boolean isAnyFieldNotEmpty = !title.isEmpty() && !content.isEmpty();
-        // Si alguno de los campos no está vacío, habilita el botón para guardar/check.
-        // Si ambos campos están vacíos, deshabilita el botón.
-        configureButtonState(buttonCheck, isAnyFieldNotEmpty);
+    private void checkForChangesAndSetButtonState() {
+        String currentTitle = noteTitle.getText().toString();
+        String currentContent = noteContent.getText().toString();
+
+        // Verifica si el texto actual es diferente del texto inicial
+        boolean titleChanged = !currentTitle.equals(initialTitle);
+        boolean contentChanged = !currentContent.equals(initialContent);
+
+        // Habilita el botón si se detectan cambios en alguno de los campos
+        configureButtonState(buttonCheck, titleChanged || contentChanged);
     }
 
 
@@ -456,7 +466,7 @@ public class NotesActivity extends AppCompatActivity {
             // Si es una nota existente, carga sus detalles para editar.
         } else {
             obtainNote(noteId);
-        }
+         }
     }
     // Muestra el panel de carga con un spinner para indicar que se está cargando o procesando algo.
     private void showLoadingPanel() {
@@ -587,7 +597,7 @@ public class NotesActivity extends AppCompatActivity {
                     previousText = newTitle;
                 }
                 updateUndoRedoButtonState();
-                checkIfTextFieldsAreEmpty();            }
+                checkForChangesAndSetButtonState();            }
         });
 
         // Similar al TextWatcher de noteTitle, este se aplica a noteContent.
@@ -619,7 +629,7 @@ public class NotesActivity extends AppCompatActivity {
                     previousText = newContent;
                 }
                 updateUndoRedoButtonState();
-                checkIfTextFieldsAreEmpty();
+                checkForChangesAndSetButtonState();
             }
 
         });
@@ -643,7 +653,7 @@ public class NotesActivity extends AppCompatActivity {
                     }
                 }
                 updateUndoRedoButtonState();
-                checkIfTextFieldsAreEmpty();
+                checkForChangesAndSetButtonState();
 
             }
         });

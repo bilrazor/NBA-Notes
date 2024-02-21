@@ -62,6 +62,12 @@ public class MainFragment extends Fragment {
         }
          return rootView; // Devuelve la vista del fragmento
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Llama a realizarFiltrado para actualizar los datos.
+        realizarFiltrado(terminoBusqueda);
+    }
 
     public void realizarFiltrado(String terminoBusqueda) {
         showLoader(); // Mostrar el loader antes de la solicitud de red
