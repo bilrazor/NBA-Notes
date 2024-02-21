@@ -363,15 +363,17 @@ public class NotesActivity extends AppCompatActivity {
     }
     // Revisa si alguno de los campos de texto (título o contenido de la nota) no está vacío.
     private void checkForChangesAndSetButtonState() {
-        String currentTitle = noteTitle.getText().toString();
-        String currentContent = noteContent.getText().toString();
+        String currentTitle = noteTitle.getText().toString().trim();
+        String currentContent = noteContent.getText().toString().trim();
 
         // Verifica si el texto actual es diferente del texto inicial
         boolean titleChanged = !currentTitle.equals(initialTitle);
         boolean contentChanged = !currentContent.equals(initialContent);
+        // Verifica además que ambos campos no estén vacíos
+        boolean bothFieldsFilled = !currentTitle.isEmpty() && !currentContent.isEmpty();
 
         // Habilita el botón si se detectan cambios en alguno de los campos
-        configureButtonState(buttonCheck, titleChanged || contentChanged);
+        configureButtonState(buttonCheck, bothFieldsFilled && (titleChanged || contentChanged));
     }
 
 
