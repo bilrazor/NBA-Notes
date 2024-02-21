@@ -6,8 +6,11 @@ import com.project.BackendNBA_Notes.payload.request.SignupRequest;
 import com.project.BackendNBA_Notes.payload.response.JwtResponse;
 import com.project.BackendNBA_Notes.payload.response.UserInfoResponse;
 import com.project.BackendNBA_Notes.repository.UserRepository;
+import com.project.BackendNBA_Notes.security.jwt.AuthTokenFilter;
 import com.project.BackendNBA_Notes.security.jwt.JwtUtils;
+import com.project.BackendNBA_Notes.security.jwt.TokenBlacklistService;
 import com.project.BackendNBA_Notes.security.service.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,10 @@ public class AuthController {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private AuthTokenFilter authTokenFilter;
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
     @Autowired
     private JwtUtils jwtUtils;
     /* Este método maneja las solicitudes de registro de usuarios.*/
@@ -70,22 +77,14 @@ public class AuthController {
     }
 
     /*Este método maneja las solicitudes de cierre de sesión de los usuarios.*/
-    @PostMapping("/signout")
-    public ResponseEntity<?> logoutUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            Long userId = userDetails.getId();
-            // Obtiene el objeto User de la base de datos
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User Not Found with id: " + userId));
-            // Elimina el token JWT del registro del usuario en la base de datos
-            user.setJwtToken(null);
-            user.setOnline(false); // Establecer el estado fuera de línea aquí
-            userRepository.save(user);
+    @DeleteMapping("/signout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+        String jwt = authTokenFilter.parseJwt(request);
+        if (jwt != null) {
+            tokenBlacklistService.blacklistToken(jwt);
             return ResponseEntity.ok("Log out successful!");
         } else {
-            throw new RuntimeException("No se pudo obtener el usuario autenticado");
+            throw new RuntimeException("No se pudo obtener el token del usuario autenticado");
         }
     }
 }
