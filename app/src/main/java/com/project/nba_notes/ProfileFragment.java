@@ -50,7 +50,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void deleteAccount(){
-        JsonObjectRequestWithAuthHeader2 request = new JsonObjectRequestWithAuthHeader2(
+        JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
                 Request.Method.DELETE,
                 "http://10.0.2.2:8000/api/auth/users",
                 null,

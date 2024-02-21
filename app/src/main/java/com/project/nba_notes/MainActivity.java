@@ -21,19 +21,5 @@ import android.widget.SearchView;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private Context context = this;
-    private MaterialToolbar toolbar;
-    private DrawerLayout drawerLayout;
-    private FragmentContainerView fragmentContainer;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
+public class MainActivity extends AppCompatActivity {
 }
