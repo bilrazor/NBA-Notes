@@ -85,7 +85,7 @@ public class CalendarFragment extends Fragment {
 
                             if (selectedDate.equals(noteDate)) {
                                 String title = note.getString("title");
-                                long id= note.getInt("id");
+                                long id= note.getLong("id");
 
                                 TextView noteTextView = new TextView(getContext());
                                 noteTextView.setText(title);
