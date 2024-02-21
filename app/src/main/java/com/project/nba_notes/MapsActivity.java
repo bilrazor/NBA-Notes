@@ -104,7 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void getAllNotes(){
         notes = new ArrayList<>();
-        JsonArrayRequestWithAuthHeader2 jsonRequest = new JsonArrayRequestWithAuthHeader2(
+        JsonArrayRequestWithAuthHeader jsonRequest = new JsonArrayRequestWithAuthHeader(
                 Request.Method.GET,
                 "http://10.0.2.2:8000/api/auth/notes",
                 null,

@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 searchRequest = (String) searchView.getQuery();
 
                 MainFragment frag = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-                realizarFiltrado(searchRequest);
+                mainFragment.realizarFiltrado(searchRequest);
 
                 return false;
             }

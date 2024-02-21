@@ -63,7 +63,7 @@ public class MainFragment extends Fragment {
          return rootView; // Devuelve la vista del fragmento
     }
 
-    private void realizarFiltrado(String terminoBusqueda) {
+    public void realizarFiltrado(String terminoBusqueda) {
         showLoader(); // Mostrar el loader antes de la solicitud de red
 
         String url;
