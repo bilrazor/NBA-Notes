@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                sendLogoutRequest();
             }
         });
 
@@ -254,7 +254,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void sendLogoutRequest(){
-
+        JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
+                Request.Method.DELETE,
+                Server.name + "/api/auth/signout",
+                null,
+                response -> {
+                    Toast.makeText(context, "Logout exitoso", Toast.LENGTH_SHORT).show();
+                },
+                error -> {
+                    Toast.makeText(context,"Error de conexión",Toast.LENGTH_LONG).show();
+                },
+                context
+        );
+        queue.add(request);
     }
 }
 
