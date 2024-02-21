@@ -78,7 +78,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Crea los marcadores de las notas en el mapa
         for(int i = 0; i < notes.size(); i++){
             NotesDataMap note = notes.get(i);
-            initMarker(note);
+            LatLng cords = note.getCords();
+            String title = String.valueOf(note.getId());
+            MarkerOptions marker = new MarkerOptions()
+                    .position(cords)
+                    .title(title)
+                    .icon(markerIcon);
+            mMap.addMarker(marker);
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -93,15 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void initMarker(NotesDataMap note){
-        LatLng cords = note.getCords();
-        String title = String.valueOf(note.getId());
-        MarkerOptions marker = new MarkerOptions()
-                .position(cords)
-                .title(title)
-                .icon(markerIcon);
-        mMap.addMarker(marker);
-    }
+
 
     private void getAllNotes(){
         notes = new ArrayList<>();
