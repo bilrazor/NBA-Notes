@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -93,7 +94,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentManager.beginTransaction()
                 .add(R.id.main_fragment_container, MainFragment.class, args)
                 .commit();
-
+        mainTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putString("CATEGORY", "todas");
+                fragmentManager.beginTransaction()
+                        .replace(R.id.main_fragment_container, MainFragment.class, args)
+                        .commit();
+            }
+        });
         themeSwapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,15 +120,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus) mainTitle.setVisibility(View.GONE);
-                if(!hasFocus) mainTitle.setVisibility(View.VISIBLE);
+
+                if (hasFocus) {
+                    // Opcionalmente, oculta el TextView
+                    mainTitle.setVisibility(View.GONE);
+                    themeSwapButton.setVisibility(View.GONE);
+                    logoutButton.setVisibility(View.GONE);
+                    // Expande el SearchView para ocupar más espacio
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) searchView.getLayoutParams();
+                    params.width = ConstraintLayout.LayoutParams.MATCH_PARENT; // O el ancho deseado
+                    searchView.setLayoutParams(params);
+                } else {
+                    // Restaura el estado original si pierde el foco
+                    mainTitle.setVisibility(View.VISIBLE);
+                    themeSwapButton.setVisibility(View.VISIBLE);
+                    logoutButton.setVisibility(View.VISIBLE);
+                    // Restringe el ancho del SearchView a su estado original
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) searchView.getLayoutParams();
+                    params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT; // O el ancho original
+                    searchView.setLayoutParams(params);
+                }
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchRequest =query.toString();
-                args.putString("searchRequest", searchRequest);
+                searchRequest =query.toString().trim();
+
+                args.putString("searchRequest", query);
+
+
+                MainFragment mainFragment = new MainFragment();
                 mainFragment.setArguments(args);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.main_fragment_container, mainFragment)
@@ -255,28 +287,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         prefs = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
     }
 
-    private void sendLogoutRequest(){
-        JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
+    private void sendLogoutRequest() {
+        StringRequestWithAuthHeader request = new StringRequestWithAuthHeader(
                 Request.Method.DELETE,
                 Server.name + "/api/auth/signout",
-                null,
                 response -> {
                     Toast.makeText(context, "Logout exitoso", Toast.LENGTH_SHORT).show();
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("username", null);
-                    editor.putString("email", null);
-                    editor.putString("token", null);
-                    editor.commit();
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
+                    prefs.edit()
+                            .remove("username")
+                            .remove("email")
+                            .remove("token")
+                            .apply();
+                    startActivity(new Intent(this, LoginActivity.class));
                 },
-                error -> {
-                    Toast.makeText(context,"Error de conexión",Toast.LENGTH_LONG).show();
-                },
+                error -> Toast.makeText(context, "Error desconocido", Toast.LENGTH_LONG).show(),
                 context
         );
         queue.add(request);
     }
+
 }
 
 

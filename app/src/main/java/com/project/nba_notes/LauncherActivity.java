@@ -17,8 +17,8 @@ public class LauncherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading_screen);
         // Recuperamos el nombre de usuario de las preferencias
-        SharedPreferences preferences = getSharedPreferences("SESSIONS_APP_PREFS", MODE_PRIVATE);
-        String username = preferences.getString("VALID_USERNAME", null); // null será el valor por defecto
+        SharedPreferences preferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        String username = preferences.getString("username", null); // null será el valor por defecto
 
 
         new Handler().postDelayed(new Runnable() {

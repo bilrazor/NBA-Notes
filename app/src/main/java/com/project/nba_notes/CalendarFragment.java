@@ -85,7 +85,7 @@ public class CalendarFragment extends Fragment {
 
                             if (selectedDate.equals(noteDate)) {
                                 String title = note.getString("title");
-                                long id= note.getLong("id");
+                                int id= note.getInt("id");
 
                                 TextView noteTextView = new TextView(getContext());
                                 noteTextView.setText(title);
@@ -96,11 +96,17 @@ public class CalendarFragment extends Fragment {
                                 noteTextView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        // Aquí abres la nueva actividad para mostrar los detalles de la nota seleccionada
+                                         // Aquí abres la nueva actividad para mostrar los detalles de la nota seleccionada
                                         // Debes pasar los datos relevantes a la nueva actividad, como el título de la nota, etc.
                                         Intent intent = new Intent(getActivity(), NotesActivity.class);
-                                        intent.putExtra("id", id); // Puedes agregar más datos según sea necesario
-                                        startActivity(intent);
+                                        try {
+                                            System.out.println("pepa"+note.getInt("id"));
+
+                                            intent.putExtra("NOTE_ID", note.getInt("id")); // Puedes agregar más datos según sea necesario
+                                        } catch (JSONException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        getActivity().startActivity(intent);
                                     }
                                 });
 

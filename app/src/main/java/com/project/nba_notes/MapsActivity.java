@@ -113,9 +113,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     for (int i = 0; i < response.length(); i++){
                         try{
                             JSONObject note = response.getJSONObject(i);
-                            NotesDataMap data = new NotesDataMap(note);
+                            double latitude = note.optDouble("latitude", 0.0);
+                            double longitude = note.optDouble("longitude", 0.0);
+                            NotesDataMap data = new NotesDataMap(note.getInt("id"), note.getString("title"), latitude, longitude);
                             notes.add(data);
-                        }catch (JSONException e){}
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // Mueve la cámara a la primera nota si existe
+                    if (!notes.isEmpty()) {
+                        LatLng firstNoteLocation = notes.get(0).getCords();
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstNoteLocation, 10)); // Ajusta el segundo parámetro para el nivel de zoom deseado
                     }
                 },
                 error -> {
@@ -126,34 +136,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         queue.add(jsonRequest);
     }
 
-//    JsonArrayRequestWithAuthHeader request = new JsonArrayRequestWithAuthHeader(
-//            Request.Method.GET,
-//            url,
-//            null,
-//            response -> {
-//                allTheNotes.clear();
-//                for (int i = 0; i < response.length(); i++) {
-//                    try {
-//                        JSONObject note = response.getJSONObject(i);
-//                        NotesData data = new NotesData(note);
-//                        allTheNotes.add(data);
-//
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                sortNotes(false);
-//                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//                recyclerView.setAdapter(adapter);
-//                hideLoader();
-//            },
-//            error -> {
-//                // Muestra un mensaje más detallado
-//                hideLoader();
-//                String mensajeError = error.getMessage() == null ? "Error desconocido" : error.getMessage();
-//                Toast.makeText(getActivity(), "Error al cargar datos: " + mensajeError,Toast.LENGTH_LONG).show();
-//            },getActivity()
-//    );
 
     private BitmapDescriptor vectorToBitmap(){
         Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.note_icon,null);

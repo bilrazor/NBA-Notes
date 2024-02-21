@@ -461,6 +461,7 @@ public class NotesActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.noteId = intent.getIntExtra("NOTE_ID", -1);
         // Si es una nueva nota, limpia los campos de texto y oculta la fecha.
+
         if (noteId == -1) {
             noteTitle.setText("");
             noteContent.setText("");
@@ -720,55 +721,3 @@ public class NotesActivity extends AppCompatActivity {
     }
 
 }
-/*# NBA Notes - Aplicación Móvil
-![Logo NBA Notes](https://github.com/bilrazor/NBA-Notes/assets/113417155/a1d48f80-152e-44a9-81cd-a14ba05d31f1)
-
-## Descripción General
-NBA Notes es una aplicación móvil diseñada para facilitar la gestión de notas, con funcionalidades intuitivas y una interfaz amigable.
-## 👨‍💻 Integrantes del Equipo
-- Billy Daniel Hanover Tapia
-- Sergio Fariñas Fernández
-- Narciso Cordeiro Ríos
-
-
-## Pantallas de la Aplicación
-
-### Pantalla 1: Registrarse
-- **Icono de la Aplicación**: Situado en la parte superior para identificación inmediata.
-- **Título**: "Register User".
-- **Campos de Entrada**: Usuario, Correo Electrónico, Contraseña.
-- **Botón de Registro**: Para crear una nueva cuenta.
-- **Enlace a Iniciar Sesión**: Para usuarios existentes.
-
-### Pantalla 2: Inicio de Sesión
-- **Icono y Título**: Identificación clara de la función de la pantalla.
-- **Campos de Usuario y Contraseña**: Con íconos representativos.
-- **Botón de Inicio de Sesión**: Para acceder a la cuenta.
-- **Enlace para Registrarse**: Para nuevos usuarios.
-
-### Pantalla Principal: NBA Notes
-- **Menú Hamburguesa y Media Luna**: Para navegación y cambio de tema.
-- **Icono de Logout**: Para cerrar sesión.
-- **Lista de Notas**: Con opciones de favoritos y botón para añadir nuevas notas.
-
-### Menú de Navegación
-- **Inicio, Pantalla de Perfil, Notas Favoritas**: Opciones de navegación rápida.
-- **Ordenar Notas**: Por fecha de creación en orden ascendente o descendente.
-
-### Pantalla de Creación/Edición de Notas
-- **Herramientas de Edición**: Incluyen íconos de regreso,undo,redo, guardado,añadir a favoritos y eliminación.
-- **Opciones de Formato de Texto**: Para personalizar el contenido de las notas el botón que hace crecer la letra.
-
-## Validaciones del Lado del Cliente
-- **Campos Requeridos**: Verificación de campos no vacíos en todas las pantallas.
-- **Validaciones Específicas**: Formato de correo, fortaleza de contraseña, autenticación.
-
-## Contribuciones
-Si deseas contribuir al proyecto, por favor revisa el archivo [CONTRIBUTING.md](#).
-
-## Contacto
-Para cualquier consulta o sugerencia, puedes contactarnos a través de [CONTACT.md](#).
-
-## Licencia
-Este proyecto está licenciado bajo [LICENSE.md](#).
-*/

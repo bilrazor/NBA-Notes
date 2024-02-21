@@ -21,6 +21,13 @@ public class NotesDataMap {
     private double latitude;
     private double longitude;
 
+    public NotesDataMap(int id, String title, double latitude, double longitude) {
+        this.id = id;
+        this.title = title;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public NotesDataMap(JSONObject robot) {
         try {
             this.id = robot.getInt("id");
