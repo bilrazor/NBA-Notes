@@ -7,4 +7,5 @@
     android:layout_height="match_parent"
     android:src="@drawable/loading_screen_nbanotes"
     android:scaleType="centerCrop"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

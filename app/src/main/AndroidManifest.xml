@@ -45,42 +45,38 @@
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".MainActivity"
-             >
+            android:exported="false">
+          
+          <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
         <activity android:name=".NotesActivity"
             android:configChanges="orientation|screenSize"
+
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
         <activity
             android:exported="true"
             android:name=".LoginActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.SEARCH" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".RegisterActivity"
             android:exported="true"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.SEARCH" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
 
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
 
         </activity>
+
+        <activity android:name=".LauncherActivity"/>
 
     </application>
 
