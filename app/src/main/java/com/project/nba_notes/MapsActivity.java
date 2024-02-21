@@ -44,7 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location lastKnownLocation;
     private FusedLocationProviderClient fusedLocationClient;
     private BitmapDescriptor markerIcon;
-    private List<NotesData> notes;
+    private List<NotesDataMap> notes;
     private Context context = this;
     private RequestQueue queue;
 
@@ -77,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Crea los marcadores de las notas en el mapa
         for(int i = 0; i < notes.size(); i++){
-            NotesData note = notes.get(i);
+            NotesDataMap note = notes.get(i);
             initMarker(note);
         }
 
@@ -93,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void initMarker(NotesData note){
+    private void initMarker(NotesDataMap note){
         LatLng cords = note.getCords();
         String title = String.valueOf(note.getId());
         MarkerOptions marker = new MarkerOptions()
@@ -113,7 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     for (int i = 0; i < response.length(); i++){
                         try{
                             JSONObject note = response.getJSONObject(i);
-                            NotesData data = new NotesData(note);
+                            NotesDataMap data = new NotesDataMap(note);
                             notes.add(data);
                         }catch (JSONException e){}
                     }
