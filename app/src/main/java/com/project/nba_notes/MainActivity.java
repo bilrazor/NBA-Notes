@@ -262,6 +262,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 null,
                 response -> {
                     Toast.makeText(context, "Logout exitoso", Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("username", null);
+                    editor.putString("email", null);
+                    editor.putString("token", null);
+                    editor.commit();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
                 },
                 error -> {
                     Toast.makeText(context,"Error de conexión",Toast.LENGTH_LONG).show();
