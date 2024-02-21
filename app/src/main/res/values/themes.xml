@@ -1,14 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+<<<<<<< HEAD
     <!-- Base application theme. -->
 
     <style name="NBA_notes.Light" parent="Theme.AppCompat.Light.NoActionBar">
+=======
+    <style name="NBA_Notes_Theme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#26A2FF</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+>>>>>>> FiltradoNotas
 
     </style>
 
-    <style name="NBA_notes.Dark" parent="Theme.AppCompat.NoActionBar">
-
+    <style name="ImgButtonStyle">
+        <item name="android:tint">@color/black</item>
     </style>
 
+<<<<<<< HEAD
     <style name="Base.Theme.NBA_notes" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -21,4 +29,10 @@
 
     <style name="Theme.NBA_notes" parent="Base.Theme.NBA_notes" />
 
+=======
+    <style name="TextStyle">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+>>>>>>> FiltradoNotas
 </resources>
