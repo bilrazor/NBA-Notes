@@ -125,8 +125,8 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-        showPassword1.setImageDrawable(newDrawable4);
-        showPassword2.setImageDrawable(newDrawable4);
+        showPassword1.setImageDrawable(newDrawable5);
+        showPassword2.setImageDrawable(newDrawable5);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +173,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isImagenCambiada) {
                     // Cambia la imagen
-                    showPassword1.setImageDrawable(newDrawable5);
+                    showPassword1.setImageDrawable(newDrawable4);
 
                     Typeface tempTypeface = editTextPassword.getTypeface();
 
@@ -184,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity {
                     editTextPassword.setTypeface(tempTypeface);
                 } else {
                     // Cambia la imagen de nuevo a la original
-                    showPassword1.setImageDrawable(newDrawable4);
+                    showPassword1.setImageDrawable(newDrawable5);
 
                     Typeface tempTypeface = editTextPassword.getTypeface();
 
@@ -206,7 +206,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isImagenCambiada) {
                     // Cambia la imagen
-                    showPassword2.setImageDrawable(newDrawable5);
+                    showPassword2.setImageDrawable(newDrawable4);
 
                     Typeface tempTypeface = editTextPassword2.getTypeface();
 
@@ -217,7 +217,7 @@ public class RegisterActivity extends AppCompatActivity {
                     editTextPassword2.setTypeface(tempTypeface);
                 } else {
                     // Cambia la imagen de nuevo a la original
-                    showPassword2.setImageDrawable(newDrawable4);
+                    showPassword2.setImageDrawable(newDrawable5);
 
                     Typeface tempTypeface = editTextPassword2.getTypeface();
 

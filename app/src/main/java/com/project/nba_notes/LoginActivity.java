@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         newDrawable4.setColorFilter(new PorterDuffColorFilter(color4, PorterDuff.Mode.SRC_IN));
 
 
-        showPassword.setImageDrawable(newDrawable3);
+        showPassword.setImageDrawable(newDrawable4);
 
 
         queue = Volley.newRequestQueue(this);
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isImagenCambiada) {
                     // Cambia la imagen
-                    showPassword.setImageDrawable(newDrawable4);
+                    showPassword.setImageDrawable(newDrawable3);
 
                     Typeface tempTypeface = editTextPassword.getTypeface();
 
@@ -164,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
                     editTextPassword.setTypeface(tempTypeface);
                 } else {
                     // Cambia la imagen de nuevo a la original
-                    showPassword.setImageDrawable(newDrawable3);
+                    showPassword.setImageDrawable(newDrawable4);
 
                     Typeface tempTypeface = editTextPassword.getTypeface();
 
