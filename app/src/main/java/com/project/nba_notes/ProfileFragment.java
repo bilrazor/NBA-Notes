@@ -14,12 +14,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 public class ProfileFragment extends Fragment {
+    private RequestQueue queue;
     public ProfileFragment(){
         super(R.layout.fragment_profile);
     }
@@ -30,10 +33,11 @@ public class ProfileFragment extends Fragment {
         TextView usernameTextView = (TextView) getView().findViewById(R.id.username_text_view);
         TextView emailTextView = (TextView) getView().findViewById(R.id.email_text_view);
         Button deleteAccountButton = (Button) getView().findViewById(R.id.delete_button);
+        queue = Volley.newRequestQueue(getContext());
         
-        SharedPreferences prefs = this.getActivity().getSharedPreferences("USER_PREFERENCES", Context.MODE_PRIVATE);
-        String username = prefs.getString("VALID_USERNAME", null);
-        String email = prefs.getString("VALID_EMAIL", null);
+        SharedPreferences prefs = this.getActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String username = prefs.getString("username", null);
+        String email = prefs.getString("email", null);
 
         String text = "USERNAME: " + username;
         usernameTextView.setText(text);
@@ -52,7 +56,7 @@ public class ProfileFragment extends Fragment {
     private void deleteAccount(){
         JsonObjectRequestWithAuthHeader request = new JsonObjectRequestWithAuthHeader(
                 Request.Method.DELETE,
-                "http://10.0.2.2:8000/api/auth/users",
+                Server.name + "/api/auth/notes",
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -76,5 +80,6 @@ public class ProfileFragment extends Fragment {
                 },
                 getContext()
         );
+        queue.add(request);
     }
 }

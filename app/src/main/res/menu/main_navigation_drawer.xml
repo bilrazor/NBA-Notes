@@ -20,6 +20,10 @@
         <item
             android:id="@+id/menu_map"
             android:title="Mapa"/>
+        <item
+            android:id="@+id/menu_calendar"
+            android:title="Calendario"/>
     </group>
+
 
 </menu>

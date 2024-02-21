@@ -3,6 +3,7 @@ package com.project.nba_notes;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -106,13 +107,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         notes = new ArrayList<>();
         JsonArrayRequestWithAuthHeader jsonRequest = new JsonArrayRequestWithAuthHeader(
                 Request.Method.GET,
-                "http://10.0.2.2:8000/api/auth/notes",
+                Server.name + "/api/auth/notes",
                 null,
                 response -> {
                     for (int i = 0; i < response.length(); i++){
                         try{
                             JSONObject note = response.getJSONObject(i);
-                            notes.add(new NotesData(note));
+                            NotesData data = new NotesData(note);
+                            notes.add(data);
                         }catch (JSONException e){}
                     }
                 },
@@ -123,6 +125,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         );
         queue.add(jsonRequest);
     }
+
+//    JsonArrayRequestWithAuthHeader request = new JsonArrayRequestWithAuthHeader(
+//            Request.Method.GET,
+//            url,
+//            null,
+//            response -> {
+//                allTheNotes.clear();
+//                for (int i = 0; i < response.length(); i++) {
+//                    try {
+//                        JSONObject note = response.getJSONObject(i);
+//                        NotesData data = new NotesData(note);
+//                        allTheNotes.add(data);
+//
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                sortNotes(false);
+//                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//                recyclerView.setAdapter(adapter);
+//                hideLoader();
+//            },
+//            error -> {
+//                // Muestra un mensaje más detallado
+//                hideLoader();
+//                String mensajeError = error.getMessage() == null ? "Error desconocido" : error.getMessage();
+//                Toast.makeText(getActivity(), "Error al cargar datos: " + mensajeError,Toast.LENGTH_LONG).show();
+//            },getActivity()
+//    );
 
     private BitmapDescriptor vectorToBitmap(){
         Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.note_icon,null);

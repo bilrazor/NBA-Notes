@@ -130,6 +130,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
 //                    .setReorderingAllowed(true)
@@ -192,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (id == R.id.menu_item_favourite){
             Bundle args = new Bundle();
-            args.putString("CATEGORY", "favorite");
+            args.putString("CATEGORY", "favoritos");
 
             fragmentManager.beginTransaction()
                     .replace(R.id.main_fragment_container, MainFragment.class, args)
@@ -232,6 +239,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.menu_map) {
             Intent intent = new Intent(this, MapsActivity.class);
             this.startActivity(intent);
+        } else if (id == R.id.menu_calendar) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, CalendarFragment.class, null)
+                    .commit();
         }
         drawerLayout.closeDrawers();
 
@@ -239,35 +250,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void retrieveUserInfo(){
-        prefs = getSharedPreferences("SESSIONS_APP_PREFS", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
     }
 
-//    private void sendFilterQuery(){
-//        allTheNotes.clear();
-//
-//        JsonArrayRequestWithAuthHeader2 request = new JsonArrayRequestWithAuthHeader2(
-//                Request.Method.GET,
-//                "http://10.0.2.2:8000/api/auth/title?title=" + searchRequest,
-//                null,
-//                response -> {
-//                    for(int i = 0; i < response.length(); i++){
-//                        try{
-//                            JSONObject note = response.getJSONObject(i);
-//                            NotesData data = new NotesData(note);
-//                            allTheNotes.add(data);
-//                        }catch (JSONException e){}
-//                    }
-//                    //
-//                    //
-//                    //
-//                },
-//                error -> {
-//
-//                },
-//                context
-//        );
-//        queue.add(request);
-//    }
+    private void sendLogoutRequest(){
+
+    }
 }
 
 

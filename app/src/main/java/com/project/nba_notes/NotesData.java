@@ -23,18 +23,6 @@ public class NotesData {
     private double latitude;
     private double longitude;
 
-    public NotesData(int id, String title, String content, boolean favorite, Date lastModified, double longitude, double latitude) {
-
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.favorite = favorite;
-        this.lastModified = lastModified;
-
-        this.latitude = latitude;
-        this.longitude = longitude;
-
-    }
     public NotesData(JSONObject robot) {
         try {
             this.id = robot.getInt("id");
@@ -42,6 +30,8 @@ public class NotesData {
             this.content = robot.getString("content");
             this.favorite = robot.getBoolean("favorite");
             String dateString = robot.getString("lastModified");
+            this.latitude = robot.getDouble("latitude");
+            this.longitude = robot.getDouble("longitude");
 
             // Quitar los microsegundos de la cadena de fecha y asumir que es UTC añadiendo 'Z'
             String modifiedDateString = dateString.substring(0, dateString.length() - 3) + "Z";
