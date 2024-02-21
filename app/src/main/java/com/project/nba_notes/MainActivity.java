@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private FragmentContainerView fragmentContainer;
     private SearchView searchView;
-    private static String searchRequest;
+    private String searchRequest;
     private ImageButton themeSwapButton;
     private ImageButton logoutButton;
     private List<NotesData> allTheNotes;
@@ -117,12 +117,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchRequest = (String) searchView.getQuery();
+                searchRequest =query.toString();
+                args.putString("searchRequest", searchRequest);
+                mainFragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.main_fragment_container, mainFragment)
+                        .commit();
 
-                MainFragment frag = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_container);
-                mainFragment.realizarFiltrado(searchRequest);
-
-                return false;
+                return true;
             }
             @Override
             public boolean onQueryTextChange(String newText) {

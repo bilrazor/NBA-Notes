@@ -162,6 +162,7 @@ public class MainFragment extends Fragment {
     // Recupera argumentos pasados al fragmento, si existen
     private void handleFragmentArguments() {
         if (getArguments() != null) {
+            terminoBusqueda = getArguments().getString("searchRequest", null);
             category = getArguments().getString("CATEGORY", "todas");
             if (category.equals("favoritos")) {
                 textViewTitle.setText("Favoritos");
